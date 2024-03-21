@@ -1,7 +1,7 @@
 package src;
 
 /**
- * 4.2.1 Application Requirements
+ * 4.2.1 Application Requirements:
  * • Users will be able to create new accounts and access via login. The system must record the date and time an account is created. It must also store the dates and times users access the application
  * • Users will be able to create collections of video games.
  * • Users will be to see the list of all their collections by name in ascending order. The list must show the following information per collection:

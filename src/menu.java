@@ -2,7 +2,8 @@ package src;
 
 public class menu {
     public static void main(String[] args) {
-        System.out.println("1) create an account\n" +
+        System.out.println("Menu:\n" +
+                "1) create an account\n" +
                 "     * 2) log in\n" +
                 "     * 3) view collections\n" +
                 "     *      a) edit collection\n" +
