@@ -10,6 +10,7 @@ package src;
  * - Total play time of the video games (in hours:minutes) of video games in the collection
  * • Users will be able to search for video games by name, platform, release date, developers, price, and genre. The resulting list of video games must show the video game's name, platforms, the developers, the publisher, the playtime and the ratings (age and user).
  * The list must be sorted alphabetically (ascending) by video game's name and release date.
+ *
  * • Users can sort by: video game name, price, genre, and released year. Results can be ascending and descending.
  * • Users can add and delete video games from their collection. Users should get a warning when adding a game to their collection for a platform that they do not own.
  * • Users can modify the name of a collection. They can also delete an entire collection
