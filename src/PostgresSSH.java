@@ -13,8 +13,8 @@ public class PostgresSSH {
         int lport = 5432;
         String rhost = "starbug.cs.rit.edu";
         int rport = 5432;
-        String user = "YOUR_CS_USERNAME"; //change to your username
-        String password = "YOUR_CS_PASSWORD"; //change to your password
+        String user = System.getenv("USER"); //change to your username
+        String password = System.getenv("PASS"); //change to your password
         String databaseName = "pdm320_11"; //change to your database name
 
         String driverName = "org.postgresql.Driver";
