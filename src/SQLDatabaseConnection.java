@@ -9,7 +9,7 @@ public class SQLDatabaseConnection {
                 "jdbc:sqlserver://starbug.cs.rit.edu;"
                         + "database=p320_11@127.0.0.1;"
                         + "user=asm1075@starbug.cs.rit.edu;"
-                        + "password=Don5gle!;"
+                        + "password=xxxx;"
                         + "encrypt=true;"
                         + "trustServerCertificate=false;"
                         + "loginTimeout=30;";
