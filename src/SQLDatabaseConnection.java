@@ -8,8 +8,8 @@ public class SQLDatabaseConnection {
         String connectionUrl =
                 "jdbc:sqlserver://starbug.cs.rit.edu;"
                         + "database=p320_11@127.0.0.1;"
-                        + "user=asm1075@starbug.cs.rit.edu;"
-                        + "password=xxxx;"
+                        + "user=" + System.getenv("USER") + "@starbug.cs.rit.edu;"
+                        + "password=" + System.getenv("PASS") + ";"
                         + "encrypt=true;"
                         + "trustServerCertificate=false;"
                         + "loginTimeout=30;";
