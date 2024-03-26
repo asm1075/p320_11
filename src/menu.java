@@ -16,6 +16,20 @@ import static javafx.application.Platform.exit;
  *                 System.out.println(resultSet.getString(2) + " " + resultSet.getString(3));
  */
 
+// start SQL codeblock here
+ResultSet resultSet;
+Statement statement = connection.createStatement()) {
+
+// Create and execute a SELECT SQL statement.
+String selectSql = "SELECT TOP 10 Title, FirstName, LastName from SalesLT.Customer";
+resultSet = statement.executeQuery(selectSql);
+
+// Print results from select statement
+while (resultSet.next()) {
+  System.out.println(resultSet.getString(2) + " " + resultSet.getString(3));
+
+// end SQL codeblock here
+
 public class menu {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -77,7 +91,28 @@ public class menu {
     }
 
     private static void createAccount() {
+        Scanner scanner = new Scanner(System.in);
         System.out.println("Creating an account for the user!");
+        System.out.println("Enter your username: ");
+        String username = scanner.next;
+        System.out.println("Enter your DOB in the format year-month-day: ");
+        String DOB = scanner.next;
+        System.out.println("Enter your password: ");
+        String password = scanner.next;
+        System.out.println("Enter your email: ");
+        String email = scanner.next;
+
+        // start SQL codeblock here
+        ResultSet resultSet;
+        Statement statement = connection.createStatement()) {
+
+        // Create and execute a SELECT SQL statement.
+        String selectSql = "INSERT into PLAYER VALUES ('" + username + "', '" + DOB + "', '" + password +
+                "', NOW(), NOW(), '" + email + "')";
+        resultSet = statement.executeQuery(selectSql);
+
+        // end SQL codeblock here
+
         // prompt for all info required for player (besides date accessed and date created)
         // check if primary key exists in table and if so, make user choose a new username
         // insert new entry into player table
@@ -86,6 +121,21 @@ public class menu {
 
     private static void logIn() {
         System.out.println("User exists, log into their account");
+
+        // start SQL codeblock here
+        ResultSet resultSet;
+        Statement statement = connection.createStatement()) {
+
+        // Create and execute a SELECT SQL statement.
+        String selectSql = "SELECT TOP 10 Title, FirstName, LastName from SalesLT.Customer";
+        resultSet = statement.executeQuery(selectSql);
+
+        // Print results from select statement
+        while (resultSet.next()) {
+            System.out.println(resultSet.getString(2) + " " + resultSet.getString(3));
+
+        // end SQL codeblock here
+
         // store user info in tuple and search entry by primary key
         // set static user variable with player's primary key (so program knows which player this is)
         // update date accessed with current datetime

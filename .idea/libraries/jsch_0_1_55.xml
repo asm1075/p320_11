@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="jsch-0.1.55">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/jsch-0.1.55.jar!/" />
+      <root url="jar://$PROJECT_DIR$/postgresql-42.7.3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
