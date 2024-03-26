@@ -1,116 +1,90 @@
 package src;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Scanner;
 
 import static javafx.application.Platform.exit;
 
-/**
- * ResultSet resultSet;
- * Statement statement = connection.createStatement()) {
- *
- *             // Create and execute a SELECT SQL statement.
- *             String selectSql = "SELECT TOP 10 Title, FirstName, LastName from SalesLT.Customer";
- *             resultSet = statement.executeQuery(selectSql);
- *
- *             // Print results from select statement
- *             while (resultSet.next()) {
- *                 System.out.println(resultSet.getString(2) + " " + resultSet.getString(3));
- */
-
-// start SQL codeblock here
-ResultSet resultSet;
-Statement statement = connection.createStatement()) {
-
-// Create and execute a SELECT SQL statement.
-String selectSql = "SELECT TOP 10 Title, FirstName, LastName from SalesLT.Customer";
-resultSet = statement.executeQuery(selectSql);
-
-// Print results from select statement
-while (resultSet.next()) {
-  System.out.println(resultSet.getString(2) + " " + resultSet.getString(3));
-
-// end SQL codeblock here
-
 public class menu {
-    public static void main(String[] args) {
+    static String username = "";
+    static int gc_id = 3002;
+    public static void main(String[] args) throws SQLException {
         Scanner scanner = new Scanner(System.in);
         int choice = 0;
         while (choice != 8) {
-            System.out.println("Menu:\n" +
-                    "1) Create an account\n" +
-                    "2) Log in\n" +
-                    "3) View/Edit collections\n" +
-                    "     a) edit collection\n" +
-                    "       - edit collection name\n" +
-                    "        - delete game\n" +
-                    "     b) create collection\n" +
-                    "     c) delete collection\n" +
-                    "4) Search games\n" +
-                    "     a) sort by\n" +
-                    "     b) add game to collection\n" +
-                    "     c) play game - make sure player owns platform\n" +
-                    "     d) rate game\n" +
-                    "5) Play game\n" +
-                    "     a) play random game\n" +
-                    "     b) search game --> (aka goes to menu option 4) \n" +
-                    "6) Search friends\n" +
-                    "     a) follow\n" +
-                    "     b) unfollow\n" +
-                    "7) Log Out\n" +
-                    "8) Exit Program\n");
+            System.out.println("""
+                    Menu:
+                    1) Create an account
+                    2) Log in
+                    3) View/Edit collections
+                         a) edit collection
+                           - edit collection name
+                            - delete game
+                         b) create collection
+                         c) delete collection
+                    4) Search games
+                         a) sort by
+                         b) add game to collection
+                         c) play game - make sure player owns platform
+                         d) rate game
+                    5) Play game
+                         a) play random game
+                         b) search game --> (aka goes to menu option 4)\s
+                    6) Search friends
+                         a) follow
+                         b) unfollow
+                    7) Log Out
+                    8) Exit Program
+                    > 
+                    """);
             choice = scanner.nextInt();
 
             switch (choice) {
-                case 1:
-                    createAccount();
-                    break;
-                case 2:
-                    logIn();
-                    break;
-                case 3:
-                    viewEditCollections();
-                    break;
-                case 4:
-                    searchGames();
-                    break;
-                case 5:
-                    playGame();
-                    break;
-                case 6:
-                    searchFriends();
-                    break;
-                case 7:
-                    logOut();
-                    break;
-                case 8:
-                    exit();
-                    break;
-                default:
-                    System.out.println("Invalid Input, please enter a number from the menu.");
+                case 1 -> createAccount();
+                case 2 -> logIn();
+                case 3 -> viewEditCollections();
+                case 4 -> searchGames();
+                case 5 -> playGame();
+                case 6 -> searchFriends();
+                case 7 -> logOut();
+                case 8 -> exit();
+                default -> System.out.println("Invalid Input, please enter a number from the menu.");
             }
         }
     }
 
-    private static void createAccount() {
+
+    /**
+     * Statement st = conn.createStatement();
+     * ResultSet rs = st.executeQuery("SELECT * FROM mytable WHERE columnfoo = 500");
+     * while (rs.next()) {
+     *     System.out.print("Column 1 returned ");
+     *     System.out.println(rs.getString(1));
+     * }
+     * rs.close();
+     * st.close();
+     */
+    private static void createAccount() throws SQLException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Creating an account for the user!");
         System.out.println("Enter your username: ");
-        String username = scanner.next;
+        String username = scanner.next();
         System.out.println("Enter your DOB in the format year-month-day: ");
-        String DOB = scanner.next;
+        String DOB = scanner.next();
         System.out.println("Enter your password: ");
-        String password = scanner.next;
+        String password = scanner.next();
         System.out.println("Enter your email: ");
-        String email = scanner.next;
+        String email = scanner.next();
 
         // start SQL codeblock here
-        ResultSet resultSet;
-        Statement statement = connection.createStatement()) {
-
-        // Create and execute a SELECT SQL statement.
-        String selectSql = "INSERT into PLAYER VALUES ('" + username + "', '" + DOB + "', '" + password +
+        Connection conn = null;
+        Statement st = conn.createStatement();
+        String query = "INSERT into PLAYER VALUES ('" + username + "', '" + DOB + "', '" + password +
                 "', NOW(), NOW(), '" + email + "')";
-        resultSet = statement.executeQuery(selectSql);
-
+        st.executeQuery(query);
+        st.close();
         // end SQL codeblock here
 
         // prompt for all info required for player (besides date accessed and date created)
@@ -120,62 +94,86 @@ public class menu {
     }
 
     private static void logIn() {
+        Scanner scanner = new Scanner(System.in);
         System.out.println("User exists, log into their account");
+        System.out.print("Enter your username: ");
+        username = scanner.next();
 
-        // start SQL codeblock here
-        ResultSet resultSet;
-        Statement statement = connection.createStatement()) {
-
-        // Create and execute a SELECT SQL statement.
-        String selectSql = "SELECT TOP 10 Title, FirstName, LastName from SalesLT.Customer";
-        resultSet = statement.executeQuery(selectSql);
-
-        // Print results from select statement
-        while (resultSet.next()) {
-            System.out.println(resultSet.getString(2) + " " + resultSet.getString(3));
-
-        // end SQL codeblock here
-
-        // store user info in tuple and search entry by primary key
-        // set static user variable with player's primary key (so program knows which player this is)
-        // update date accessed with current datetime
-        System.out.println("Welcome" + player.name + ". You are logged in!");
+        System.out.println("Welcome " + username + ". You are logged in!\n");
     }
 
-    private static void viewEditCollections() {
+    private static void viewEditCollections() throws SQLException {
+        if (username.equals("")) {
+            System.out.println("You are not logged in");
+            return;
+        }
+
+        Connection conn = null; // change when we get into postgresSQL
+        Statement st = conn.createStatement();
+
         Scanner scanner = new Scanner(System.in);
         System.out.println("Your Collections: \n");
-        int choice = 0;
+        int choice;
         System.out.println("1) View collection\n 2) Edit Collection\n 3) Create Collection" +
                 "\n 4) Delete Collection\n");
         choice = scanner.nextInt();
         switch (choice) {
             case 1:
-                // check static user variable and print all collections related with it
-                // printed in ascending order by name
+                // start SQL codeblock here
+                String query = "SELECT * FROM game_collection WHERE username =" + username + " order by username asc";
+                ResultSet rs = st.executeQuery(query);
+                while (rs.next()) {
+                    System.out.print("Column 1 returned ");
+                    System.out.println(rs.getString(1));
+                }
+                rs.close();
+                st.close();
+                // end SQL codeblock here
+
                 // display number of games in collection and total play time in hours: minutes
                 break;
             case 2:
                 System.out.println("1) Edit Collection Name\n 2) Delete Game\n");
                 choice = scanner.nextInt();
                 if (choice == 1) {
-                    // edit collection table entry name
+                    // start SQL codeblock here
+                    System.out.println("Which collection name would you like to change?");
+                    String collection = scanner.next();
+                    System.out.println("What would you like to change it to?");
+                    String updated = scanner.next();
+                    query = "UPDATE game_collection set name ='" + updated + "' WHERE name = '" + collection + "'";
+                    st.executeQuery(query);
+                    st.close();
+                    // end SQL codeblock here
                 } else if (choice == 2) {
-                    // prompt for which game by primary key of game
-                    // delete that game from the collection
+                    // start SQL codeblock here
+                    System.out.println("Which video game would you like to remove (video game ID)?");
+                    int vg_id = scanner.nextInt();
+                    System.out.println("Which collection would you like to remove this video game from?");
+                    String collection = scanner.next();
+                    query = "DELETE FROM game_collection WHERE vg_id = " + vg_id + " AND name = '" + collection + "'";
+                    st.executeQuery(query);
+                    st.close();
+                    // end SQL codeblock here
                 } else {
                     System.out.println("Not an option, womp womp.");
                 }
                 break;
             case 3:
-                System.out.println("Enter collection name: ");
+                System.out.println("Enter new collection name to create: ");
                 String collectionName = scanner.next();
-                // make collection with this name and make it empty (no games)
+                // start SQL codeblock here
+                query = "INSERT INTO game_collection VALUES (" + gc_id++ + ", '" + username + "', '" + collectionName + "' , 0";
+                st.executeQuery(query);
+                st.close();
+                // end SQL codeblock here
                 break;
             case 4:
                 System.out.println("Which collection would you like to delete?");
-                // prompt for which game by primary key of collection
-                // delete that collection
+                String name = scanner.next();
+                query = "DELETE FROM game_collection WHERE name = '" + name + "'";
+                st.executeQuery(query);
+                st.close();
                 break;
             default:
                 // go back to main menu because you suck for not entering something correctly
@@ -185,8 +183,7 @@ public class menu {
 
     private static void searchGames() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Search: \n");
-        String searchWord = scanner.next();
+        System.out.println("Search by (title, platform, release date, developers, price, and genre): \n");
 
         // search through every entry in video_games and if search word matches any attributes,
         // display them alphabetically (ascending) by video game's name and release date
@@ -252,32 +249,53 @@ public class menu {
 
     }
 
-    private static void searchFriends() {
+    private static void searchFriends() throws SQLException {
         System.out.println("1) Follow \n 2) Unfollow\n");
         Scanner scanner = new Scanner(System.in);
         int choice = scanner.nextInt();
+
+        Connection conn = null; // change when we get into postgresSQL
+        Statement st = conn.createStatement();
+
         switch (choice) {
-            case 1:
+            case 1 -> {
                 System.out.println("Enter friend's email address:");
-                // if email exists and player associated
-                    // add to friend of static user
+                String email = scanner.next();
+                // start SQL codeblock here
+                String getUsername = "SELECT username FROM player WHERE email ='" + email + "'";
+                ResultSet rs = st.executeQuery(getUsername);
+                String makeFriendship = "INSERT INTO friendship VALUES ('" + username + "', '" + rs.getString(1) + "'";
+                st.executeQuery(makeFriendship);
+                rs.close();
+                st.close();
+                // end SQL codeblock here
+
                 // if email doesn't exist
-                System.out.println("There is no user associated with this account");
-                break;
-            case 2:
+                //System.out.println("There is no user associated with this account");
+            }
+            case 2 -> {
                 System.out.println("Enter friend's email address to unfollow:");
-                // if email exists and player associated
-                    // delete friend of static user
+                String email = scanner.next();
+                // start SQL codeblock here
+                String getUsername = "SELECT username FROM player WHERE email ='" + email + "'";
+                ResultSet rs = st.executeQuery(getUsername);
+                String removeFriendship = "DELETE FROM friendship WHERE username1 = '" + username + "' AND username2 = '" + rs.getString(1) + "'";
+                st.executeQuery(removeFriendship);
+                rs.close();
+                st.close();
+                // end SQL codeblock here
+
                 // if email doesn't exist
-                System.out.println("There is no user associated with this account");
-                break;
-            default:
+                //System.out.println("There is no user associated with this account");
+            }
+            default -> {
                 return;
+            }
         }
     }
 
     private static void logOut() {
-        // set static user variable back to null
+        username = "";
         System.out.println("You're logged out! Byeeee");
     }
 
