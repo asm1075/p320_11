@@ -4,6 +4,19 @@ import java.util.Scanner;
 
 import static javafx.application.Platform.exit;
 
+/**
+ * ResultSet resultSet;
+ * Statement statement = connection.createStatement()) {
+ *
+ *             // Create and execute a SELECT SQL statement.
+ *             String selectSql = "SELECT TOP 10 Title, FirstName, LastName from SalesLT.Customer";
+ *             resultSet = statement.executeQuery(selectSql);
+ *
+ *             // Print results from select statement
+ *             while (resultSet.next()) {
+ *                 System.out.println(resultSet.getString(2) + " " + resultSet.getString(3));
+ */
+
 public class menu {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
