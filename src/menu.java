@@ -1,5 +1,4 @@
 package src;
-
 import java.util.Scanner;
 
 import static javafx.application.Platform.exit;
