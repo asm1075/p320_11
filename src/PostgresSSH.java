@@ -147,21 +147,35 @@ public class PostgresSSH {
 
     // WORKS!!
     private static void logIn() throws SQLException {
-        try {
-            st = conn.createStatement();
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("User exists, log into their account");
-            System.out.print("Enter your username: ");
-            username = scanner.next();
-            System.out.print("Enter your password: ");
-            String pass = scanner.next();
 
+        st = conn.createStatement();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("User exists, log into their account");
+        System.out.print("Enter your username: ");
+        username = scanner.next();
+        System.out.print("Enter your password: ");
+        String pass = scanner.next();
+
+        String getPassword = "SELECT password FROM player WHERE username ='" + username + "'";
+        try {
+            ResultSet rs = st.executeQuery(getPassword);
+            if (pass.equals(rs.getString(3))) {
+                System.out.println("Welcome " + username + ". You are logged in!\n");
+            } else {
+                System.out.println("Incorrect password. Womp womp :/");
+            }
+        } catch (PSQLException e) {
+
+        }
+
+        try {
             String query = "UPDATE player set last_accessed = NOW() WHERE username = '" + username + "'";
             st.executeQuery(query);
-            System.out.println("Welcome " + username + ". You are logged in!\n");
         } catch (PSQLException e) {
-            // catches exception because nothing is being returned
+
         }
+
+
 
     }
 
