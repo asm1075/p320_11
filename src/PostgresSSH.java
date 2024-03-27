@@ -11,6 +11,15 @@ public class PostgresSSH {
     static String username = "";
     static int gc_id = 3002;
     static Connection conn = null;
+    static Statement st;
+
+    static {
+        try {
+            st = conn.createStatement();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static void main(String[] args) throws SQLException {
 
@@ -128,7 +137,6 @@ public class PostgresSSH {
         String email = scanner.next();
 
         // start SQL codeblock here
-        Statement st = conn.createStatement();
         String query = "INSERT into PLAYER VALUES ('" + username + "', '" + DOB + "', '" + pass +
                 "', NOW(), NOW(), '" + email + "')";
         st.executeQuery(query);
@@ -137,14 +145,14 @@ public class PostgresSSH {
     }
 
 
-    private static void logIn() {
+    private static void logIn() throws SQLException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("User exists, log into their account");
         System.out.print("Enter your username: ");
         username = scanner.next();
 
-//        String query = "UPDATE player set last_accessed = NOW() WHERE username = '" + username + "'";
-//        st.executeQuery(query);
+        String query = "UPDATE player set last_accessed = NOW() WHERE username = '" + username + "'";
+        st.executeQuery(query);
         System.out.println("Welcome " + username + ". You are logged in!\n");
     }
 
@@ -154,8 +162,6 @@ public class PostgresSSH {
             return;
         }
 
-        Connection conn = null; // change when we get into postgresSQL
-        Statement st = conn.createStatement();
 
         Scanner scanner = new Scanner(System.in);
         System.out.println("Your Collections: \n");
