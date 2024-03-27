@@ -6,7 +6,6 @@ import java.sql.*;
 import java.util.Properties;
 import java.util.Scanner;
 
-import static javafx.application.Platform.exit;
 
 public class PostgresSSH {
     static String username = "";
@@ -154,8 +153,11 @@ public class PostgresSSH {
             System.out.println("User exists, log into their account");
             System.out.print("Enter your username: ");
             username = scanner.next();
+            System.out.print("Enter your password: ");
+            String pass = scanner.next();
 
             String query = "UPDATE player set last_accessed = NOW() WHERE username = '" + username + "'";
+            st.executeQuery(query);
             System.out.println("Welcome " + username + ". You are logged in!\n");
         } catch (PSQLException e) {
             // catches exception because nothing is being returned
