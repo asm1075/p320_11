@@ -13,13 +13,7 @@ public class PostgresSSH {
     static Connection conn = null;
     static Statement st;
 
-    static {
-        try {
-            st = conn.createStatement();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+
 
     public static void main(String[] args) throws SQLException {
 
@@ -83,7 +77,7 @@ public class PostgresSSH {
         Scanner scanner = new Scanner(System.in);
         int choice = 0;
         while (choice != 8) {
-            System.out.println("""
+            System.out.print("""
                     Menu:
                     1) Create an account
                     2) Log in
@@ -124,7 +118,9 @@ public class PostgresSSH {
         }
     }
 
+    // WORKS!
     private static void createAccount() throws SQLException {
+        st = conn.createStatement();
         Scanner scanner = new Scanner(System.in);
         System.out.print("Creating an account for the user!");
         System.out.print("Enter your username: ");
@@ -145,7 +141,9 @@ public class PostgresSSH {
     }
 
 
+    // WORKS!!
     private static void logIn() throws SQLException {
+        st = conn.createStatement();
         Scanner scanner = new Scanner(System.in);
         System.out.println("User exists, log into their account");
         System.out.print("Enter your username: ");
@@ -157,6 +155,7 @@ public class PostgresSSH {
     }
 
     private static void viewEditCollections() throws SQLException {
+        st = conn.createStatement();
         if (username.equals("")) {
             System.out.println("You are not logged in");
             return;
@@ -233,7 +232,8 @@ public class PostgresSSH {
         }
     }
 
-    private static void searchGames() {
+    private static void searchGames() throws SQLException {
+        st = conn.createStatement();
         Scanner scanner = new Scanner(System.in);
         System.out.println("Search by (title, platform, release date, developers, price, and genre): \n");
 
@@ -283,7 +283,8 @@ public class PostgresSSH {
         }
     }
 
-    private static void playGame() {
+    private static void playGame() throws SQLException {
+        st = conn.createStatement();
         Scanner scanner = new Scanner(System.in);
         System.out.println("1) Play Game\n2) Play Random Game!\n");
         int choice = scanner.nextInt();
