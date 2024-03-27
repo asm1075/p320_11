@@ -99,6 +99,8 @@ public class menu {
         System.out.print("Enter your username: ");
         username = scanner.next();
 
+//        String query = "UPDATE player set last_accessed = NOW() WHERE username = '" + username + "'";
+//        st.executeQuery(query);
         System.out.println("Welcome " + username + ". You are logged in!\n");
     }
 
@@ -130,7 +132,7 @@ public class menu {
                 st.close();
                 // end SQL codeblock here
 
-                // display number of games in collection and total play time in hours: minutes
+                //TODO display number of games in collection and total play time in hours: minutes
                 break;
             case 2:
                 System.out.println("1) Edit Collection Name\n 2) Delete Game\n");
