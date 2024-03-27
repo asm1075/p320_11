@@ -157,13 +157,14 @@ public class PostgresSSH {
         System.out.print("Enter your password: ");
         String pass = scanner.next();
 
-        String getPassword = "SELECT password FROM player WHERE username ='" + username + "'";
+        String getPassword = "SELECT password FROM player WHERE username='" + username + "'";
         try {
             ResultSet rs = st.executeQuery(getPassword);
-            if (pass.equals(rs.getString(3))) {
-                System.out.println("Welcome " + username + ". You are logged in!\n");
-            } else {
-                System.out.println("Incorrect password. Womp womp :/");
+            if(rs.next()){
+                if (pass.equals(rs.getString(1)))
+                    System.out.println("Welcome " + username + ". You are logged in!\n");
+                else
+                    System.out.println("Incorrect password. Womp womp :/");
             }
         } catch (PSQLException e) {
 
