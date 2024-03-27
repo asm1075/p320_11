@@ -77,6 +77,7 @@ public class PostgresSSH {
         Scanner scanner = new Scanner(System.in);
         int choice = 0;
         while (choice != 8) {
+            System.out.println("Welcome " + username + "!");
             System.out.print("""
                     Menu:
                     1) Create an account
@@ -191,7 +192,7 @@ public class PostgresSSH {
         System.out.println("Your Collections: \n");
         int choice;
         System.out.println("1) View collection\n 2) Edit Collection\n 3) Create Collection" +
-                "\n 4) Delete Collection\n");
+                "\n 4) Delete Collection\n> ");
         choice = scanner.nextInt();
         switch (choice) {
             case 1:
@@ -236,16 +237,19 @@ public class PostgresSSH {
                 }
                 break;
             case 3:
+                // WORKS!!
                 try {
-                    System.out.println("Enter new collection name to create: ");
+                    System.out.print("Enter new collection name to create: ");
                     String collectionName = scanner.next();
-                    query = "INSERT INTO game_collection VALUES (" + gc_id++ + ", '" + username + "', '" + collectionName + "' , 0";
+                    gc_id++;
+                    query = "INSERT INTO game_collection VALUES (" + gc_id + ", '" + username + "', '" + collectionName + "')";
                     st.executeQuery(query);
                 } catch (PSQLException e) {
 
                 }
                 break;
             case 4:
+                // WORKS!!
                 try {
                     System.out.println("Which collection would you like to delete?");
                     String name = scanner.next();
@@ -331,6 +335,7 @@ public class PostgresSSH {
 
     }
 
+    // WORKS!!
     private static void searchFriends() throws SQLException {
         st = conn.createStatement();
         if (username.equals("")) {
