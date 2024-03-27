@@ -209,6 +209,7 @@ public class PostgresSSH {
                 //TODO display number of games in collection and total play time in hours: minutes
                 break;
             case 2:
+                // WORKS!!
                 System.out.println("1) Edit Collection Name\n 2) Delete Game\n");
                 choice = scanner.nextInt();
                 if (choice == 1) {
