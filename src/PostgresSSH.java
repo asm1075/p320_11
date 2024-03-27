@@ -153,18 +153,21 @@ public class PostgresSSH {
         Scanner scanner = new Scanner(System.in);
         System.out.println("User exists, log into their account");
         System.out.print("Enter your username: ");
-        username = scanner.next();
+        String user = scanner.next();
         System.out.print("Enter your password: ");
         String pass = scanner.next();
 
-        String getPassword = "SELECT password FROM player WHERE username='" + username + "'";
+        String getPassword = "SELECT password FROM player WHERE username='" + user + "'";
         try {
             ResultSet rs = st.executeQuery(getPassword);
             if(rs.next()){
-                if (pass.equals(rs.getString(1)))
+                if (pass.equals(rs.getString(1))) {
+                    username = user;
                     System.out.println("Welcome " + username + ". You are logged in!\n");
-                else
+                } else {
                     System.out.println("Incorrect password. Womp womp :/");
+                    return;
+                }
             }
         } catch (PSQLException e) {
 
@@ -176,9 +179,6 @@ public class PostgresSSH {
         } catch (PSQLException e) {
 
         }
-
-
-
     }
 
     private static void viewEditCollections() throws SQLException {
