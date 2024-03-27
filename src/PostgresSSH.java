@@ -1,5 +1,6 @@
 package src;
 import com.jcraft.jsch.*;
+import org.postgresql.util.PSQLException;
 
 import java.sql.*;
 import java.util.Properties;
@@ -112,7 +113,9 @@ public class PostgresSSH {
                 case 5 -> playGame();
                 case 6 -> searchFriends();
                 case 7 -> logOut();
-                case 8 -> exit();
+                case 8 -> {
+                    return;
+                }
                 default -> System.out.println("Invalid Input, please enter a number from the menu.");
             }
         }
@@ -120,38 +123,44 @@ public class PostgresSSH {
 
     // WORKS!
     private static void createAccount() throws SQLException {
-        st = conn.createStatement();
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Creating an account for the user!");
-        System.out.print("Enter your username: ");
-        String username = scanner.next();
-        System.out.print("Enter your DOB in the format year-month-day: ");
-        String DOB = scanner.next();
-        System.out.print("Enter your password: ");
-        String pass = scanner.next();
-        System.out.print("Enter your email: ");
-        String email = scanner.next();
+        try {
+            st = conn.createStatement();
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Creating an account for the user!");
+            System.out.print("Enter your username: ");
+            String username = scanner.next();
+            System.out.print("Enter your DOB in the format year-month-day: ");
+            String DOB = scanner.next();
+            System.out.print("Enter your password: ");
+            String pass = scanner.next();
+            System.out.print("Enter your email: ");
+            String email = scanner.next();
 
-        // start SQL codeblock here
-        String query = "INSERT into PLAYER VALUES ('" + username + "', '" + DOB + "', '" + pass +
-                "', NOW(), NOW(), '" + email + "')";
-        st.executeQuery(query);
-        st.close();
-        // end SQL codeblock here
+            String query = "INSERT into PLAYER VALUES ('" + username + "', '" + DOB + "', '" + pass +
+                    "', NOW(), NOW(), '" + email + "')";
+            st.executeQuery(query);
+        } catch (PSQLException e) {
+            // catches exception because nothing is being returned
+        }
+
     }
 
 
     // WORKS!!
     private static void logIn() throws SQLException {
-        st = conn.createStatement();
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("User exists, log into their account");
-        System.out.print("Enter your username: ");
-        username = scanner.next();
+        try {
+            st = conn.createStatement();
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("User exists, log into their account");
+            System.out.print("Enter your username: ");
+            username = scanner.next();
 
-        String query = "UPDATE player set last_accessed = NOW() WHERE username = '" + username + "'";
-        st.executeQuery(query);
-        System.out.println("Welcome " + username + ". You are logged in!\n");
+            String query = "UPDATE player set last_accessed = NOW() WHERE username = '" + username + "'";
+            System.out.println("Welcome " + username + ". You are logged in!\n");
+        } catch (PSQLException e) {
+            // catches exception because nothing is being returned
+        }
+
     }
 
     private static void viewEditCollections() throws SQLException {
@@ -177,8 +186,6 @@ public class PostgresSSH {
                     System.out.print("Column 1 returned ");
                     System.out.println(rs.getString(1));
                 }
-                rs.close();
-                st.close();
                 // end SQL codeblock here
 
                 //TODO display number of games in collection and total play time in hours: minutes
@@ -187,44 +194,50 @@ public class PostgresSSH {
                 System.out.println("1) Edit Collection Name\n 2) Delete Game\n");
                 choice = scanner.nextInt();
                 if (choice == 1) {
-                    // start SQL codeblock here
-                    System.out.println("Which collection name would you like to change?");
-                    String collection = scanner.next();
-                    System.out.println("What would you like to change it to?");
-                    String updated = scanner.next();
-                    query = "UPDATE game_collection set name ='" + updated + "' WHERE name = '" + collection + "'";
-                    st.executeQuery(query);
-                    st.close();
-                    // end SQL codeblock here
+                    try {
+                        System.out.println("Which collection name would you like to change?");
+                        String collection = scanner.next();
+                        System.out.println("What would you like to change it to?");
+                        String updated = scanner.next();
+                        query = "UPDATE game_collection set name ='" + updated + "' WHERE name = '" + collection + "'";
+                        st.executeQuery(query);
+                    } catch (PSQLException e) {
+
+                    }
                 } else if (choice == 2) {
-                    // start SQL codeblock here
-                    System.out.println("Which video game would you like to remove (video game ID)?");
-                    int vg_id = scanner.nextInt();
-                    System.out.println("Which collection would you like to remove this video game from?");
-                    String collection = scanner.next();
-                    query = "DELETE FROM game_collection WHERE vg_id = " + vg_id + " AND name = '" + collection + "'";
-                    st.executeQuery(query);
-                    st.close();
-                    // end SQL codeblock here
+                    try {
+                        System.out.println("Which video game would you like to remove (video game ID)?");
+                        int vg_id = scanner.nextInt();
+                        System.out.println("Which collection would you like to remove this video game from?");
+                        String collection = scanner.next();
+                        query = "DELETE FROM game_collection WHERE vg_id = " + vg_id + " AND name = '" + collection + "'";
+                        st.executeQuery(query);
+                    } catch (PSQLException e) {
+
+                    }
                 } else {
                     System.out.println("Not an option, womp womp.");
                 }
                 break;
             case 3:
-                System.out.println("Enter new collection name to create: ");
-                String collectionName = scanner.next();
-                // start SQL codeblock here
-                query = "INSERT INTO game_collection VALUES (" + gc_id++ + ", '" + username + "', '" + collectionName + "' , 0";
-                st.executeQuery(query);
-                st.close();
-                // end SQL codeblock here
+                try {
+                    System.out.println("Enter new collection name to create: ");
+                    String collectionName = scanner.next();
+                    query = "INSERT INTO game_collection VALUES (" + gc_id++ + ", '" + username + "', '" + collectionName + "' , 0";
+                    st.executeQuery(query);
+                } catch (PSQLException e) {
+
+                }
                 break;
             case 4:
-                System.out.println("Which collection would you like to delete?");
-                String name = scanner.next();
-                query = "DELETE FROM game_collection WHERE name = '" + name + "'";
-                st.executeQuery(query);
-                st.close();
+                try {
+                    System.out.println("Which collection would you like to delete?");
+                    String name = scanner.next();
+                    query = "DELETE FROM game_collection WHERE name = '" + name + "'";
+                    st.executeQuery(query);
+                } catch (PSQLException e) {
+
+                }
                 break;
             default:
                 // go back to main menu because you suck for not entering something correctly
