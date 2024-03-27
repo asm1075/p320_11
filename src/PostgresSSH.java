@@ -316,43 +316,54 @@ public class PostgresSSH {
     }
 
     private static void searchFriends() throws SQLException {
-        System.out.println("1) Follow \n 2) Unfollow\n");
+        st = conn.createStatement();
+        if (username.equals("")) {
+            System.out.println("You are not logged in");
+            return;
+        }
+
+        System.out.println("1) Follow \n2) Unfollow\n");
         Scanner scanner = new Scanner(System.in);
         int choice = scanner.nextInt();
 
-        Connection conn = null; // change when we get into postgresSQL
-        Statement st = conn.createStatement();
-
         switch (choice) {
             case 1 -> {
-                System.out.println("Enter friend's email address:");
-                String email = scanner.next();
-                // start SQL codeblock here
-                String getUsername = "SELECT username FROM player WHERE email ='" + email + "'";
-                ResultSet rs = st.executeQuery(getUsername);
-                String makeFriendship = "INSERT INTO friendship VALUES ('" + username + "', '" + rs.getString(1) + "'";
-                st.executeQuery(makeFriendship);
-                rs.close();
-                st.close();
+                try {
+                    System.out.println("Enter friend's email address:");
+                    String email = scanner.next();
+                    // start SQL codeblock here
+                    String getUsername = "SELECT username FROM player WHERE email ='" + email + "'";
+                    ResultSet rs = st.executeQuery(getUsername);
+                    if (rs.next()) { // makes sure there is space amd exists
+                        String makeFriendship = "INSERT INTO friendship VALUES ('" + username + "', '" + rs.getString(1) + "')";
+                        st.executeQuery(makeFriendship);
+                    } else // no user found
+                        System.out.println("There is no user associated with this account");
+                }
+                catch(PSQLException e){
+
+                }
                 // end SQL codeblock here
 
-                // if email doesn't exist
-                //System.out.println("There is no user associated with this account");
             }
             case 2 -> {
-                System.out.println("Enter friend's email address to unfollow:");
-                String email = scanner.next();
-                // start SQL codeblock here
-                String getUsername = "SELECT username FROM player WHERE email ='" + email + "'";
-                ResultSet rs = st.executeQuery(getUsername);
-                String removeFriendship = "DELETE FROM friendship WHERE username1 = '" + username + "' AND username2 = '" + rs.getString(1) + "'";
-                st.executeQuery(removeFriendship);
-                rs.close();
-                st.close();
-                // end SQL codeblock here
+                try {
+                    System.out.println("Enter friend's email address to unfollow:");
+                    String email = scanner.next();
+                    // start SQL codeblock here
+                    String getUsername = "SELECT username FROM player WHERE email ='" + email + "'";
+                    ResultSet rs = st.executeQuery(getUsername);
+                    if (rs.next()) { // make sure exists
+                        String removeFriendship = "DELETE FROM friendship WHERE username1='" + username + "' AND username2='" + rs.getString(1) + "'";
+                        st.executeQuery(removeFriendship);
+                    } else
+                        System.out.println("There is no user associated with this account");
+                }
+                catch(PSQLException e){
 
-                // if email doesn't exist
-                //System.out.println("There is no user associated with this account");
+                }
+
+                // end SQL codeblock here
             }
             default -> {
                 return;
