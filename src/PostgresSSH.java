@@ -316,7 +316,59 @@ public class PostgresSSH {
     }
 
     private static void searchFriends() throws SQLException {
+        st = conn.createStatement();
+        if (username.equals("")) {
+            System.out.println("You are not logged in");
+            return;
+        }
 
+        System.out.println("1) Follow \n2) Unfollow\n");
+        Scanner scanner = new Scanner(System.in);
+        int choice = scanner.nextInt();
+
+        switch (choice) {
+            case 1 -> {
+                try {
+                    System.out.println("Enter friend's email address:");
+                    String email = scanner.next();
+                    // start SQL codeblock here
+                    String getUsername = "SELECT username FROM player WHERE email ='" + email + "'";
+                    ResultSet rs = st.executeQuery(getUsername);
+                    if (rs.next()) { // makes sure there is space amd exists
+                        String makeFriendship = "INSERT INTO friendship VALUES ('" + username + "', '" + rs.getString(1) + "')";
+                        st.executeQuery(makeFriendship);
+                    } else // no user found
+                        System.out.println("There is no user associated with this account");
+                }
+                catch(PSQLException e){
+
+                }
+                // end SQL codeblock here
+
+            }
+            case 2 -> {
+                try {
+                    System.out.println("Enter friend's email address to unfollow:");
+                    String email = scanner.next();
+                    // start SQL codeblock here
+                    String getUsername = "SELECT username FROM player WHERE email ='" + email + "'";
+                    ResultSet rs = st.executeQuery(getUsername);
+                    if (rs.next()) { // make sure exists
+                        String removeFriendship = "DELETE FROM friendship WHERE username1='" + username + "' AND username2='" + rs.getString(1) + "'";
+                        st.executeQuery(removeFriendship);
+                    } else
+                        System.out.println("There is no user associated with this account");
+                }
+                catch(PSQLException e){
+
+                }
+
+                // end SQL codeblock here
+            }
+            default -> {
+                return;
+            }
+        }
     }
 
     private static void logOut() {
