@@ -153,7 +153,6 @@ public class PostgresSSH {
         if(rs.next()) {
             if (pass.equals(rs.getString(1))) {
                 username = user;
-                System.out.println("Welcome " + username + ". You are logged in!\n");
             } else {
                 System.out.println("Incorrect password. Womp womp :/\n");
                 return;
@@ -166,7 +165,7 @@ public class PostgresSSH {
             String query = "UPDATE player set last_accessed = NOW() WHERE username = '" + username + "'";
             st.executeQuery(query);
         } catch (PSQLException e) {
-
+            System.out.println("Welcome " + username + ". You are logged in!\n");
         }
     }
 
@@ -215,12 +214,15 @@ public class PostgresSSH {
                 }
 
                 if (choice == 1) {
+                    String updated = "";
                     try {
                         System.out.println("What would you like to change it to?");
-                        String updated = scanner.next();
+                        updated = scanner.next();
                         query = "UPDATE game_collection set name ='" + updated + "' WHERE name = '" + collection + "'";
                         st.executeQuery(query);
-                    } catch (PSQLException e) { }
+                    } catch (PSQLException e) {
+                        System.out.println(collection + " has been changed to " + updated + "!");
+                    }
 
                 } else if (choice == 2) {
                     System.out.println("Which video game would you like to add to " + collection + "?");
@@ -232,8 +234,9 @@ public class PostgresSSH {
                     try {
                         query = "INSERT into vg_collection VALUES (" + vg_id + ", " + gamecoll_id + ")";
                         st.executeQuery(query);
-                    } catch (PSQLException e) { }
-                    System.out.println("Added " + vg_name + " to " + collection + "!\n");
+                    } catch (PSQLException e) {
+                        System.out.println("Added " + vg_name + " to " + collection + "!\n");
+                    }
 
                 } else if (choice == 3) {
                     System.out.println("Which video game would you like to remove?");
@@ -243,33 +246,36 @@ public class PostgresSSH {
                     try {
                         query = "DELETE FROM vg_collection WHERE vg_id = " + vg_id + " AND gc_id = '" + gamecoll_id + "'";
                         st.executeQuery(query);
-                    } catch (PSQLException e) { }
-                    System.out.println("Deleted " + vg_name + " from " + collection + "!\n");
+                    } catch (PSQLException e) {
+                        System.out.println("Deleted " + vg_name + " from " + collection + "!\n");
+                    }
                 } else {
                     System.out.println("Not an option, womp womp.\n");
                 }
                 break;
             case 3:
                 // WORKS!!
+                String name = "";
                 try {
                     System.out.print("Enter new collection name to create: ");
-                    String collectionName = scanner.next();
+                    name = scanner.next();
                     gc_id++;
-                    query = "INSERT INTO game_collection VALUES (" + gc_id + ", '" + username + "', '" + collectionName + "')";
+                    query = "INSERT INTO game_collection VALUES (" + gc_id + ", '" + username + "', '" + name + "')";
                     st.executeQuery(query);
                 } catch (PSQLException e) {
-
+                    System.out.println(name + " has been created!");
                 }
                 break;
             case 4:
                 // WORKS!!
+                name = "";
                 try {
                     System.out.println("Which collection would you like to delete?");
-                    String name = scanner.next();
+                    name = scanner.next();
                     query = "DELETE FROM game_collection WHERE name = '" + name + "'";
                     st.executeQuery(query);
                 } catch (PSQLException e) {
-
+                    System.out.println(name + " has been deleted!");
                 }
                 break;
             default:
@@ -372,9 +378,9 @@ public class PostgresSSH {
         try {
             String query = "INSERT INTO user_rating VALUES ('" + username + "', " + vg_id + ", " + score + ", '" + comment + "')";
             st.executeQuery(query);
-        } catch (PSQLException e) { }
-        System.out.println(vg_name + "has been rated with a score of " + score + " and the comment \"" + comment + "\"!\n");
-
+        } catch (PSQLException e) {
+            System.out.println(vg_name + "has been rated with a score of " + score + " and the comment \"" + comment + "\"!\n");
+        }
 
     }
 
@@ -392,26 +398,23 @@ public class PostgresSSH {
                 try {
                     System.out.println("Enter friend's email address:");
                     String email = scanner.next();
-                    // start SQL codeblock here
                     String getUsername = "SELECT username FROM player WHERE email ='" + email + "'";
                     ResultSet rs = st.executeQuery(getUsername);
-                    if (rs.next()) { // makes sure there is space amd exists
+                    if (rs.next()) { // makes sure there is space and exists
                         String makeFriendship = "INSERT INTO friendship VALUES ('" + username + "', '" + rs.getString(1) + "')";
                         st.executeQuery(makeFriendship);
                     } else // no user found
                         System.out.println("There is no user associated with this account");
                 }
                 catch(PSQLException e){
-
+                    System.out.println("Friendship complete!");
                 }
-                // end SQL codeblock here
 
             }
             case 2 -> {
                 try {
                     System.out.println("Enter friend's email address to unfollow:");
                     String email = scanner.next();
-                    // start SQL codeblock here
                     String getUsername = "SELECT username FROM player WHERE email ='" + email + "'";
                     ResultSet rs = st.executeQuery(getUsername);
                     if (rs.next()) { // make sure exists
@@ -421,10 +424,8 @@ public class PostgresSSH {
                         System.out.println("There is no user associated with this account");
                 }
                 catch(PSQLException e){
-
+                    System.out.println("Friendship removed!");
                 }
-
-                // end SQL codeblock here
             }
             default -> {
             }
