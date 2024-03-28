@@ -380,7 +380,6 @@ public class PostgresSSH {
 
     // WORKS!!
     private static void searchFriends() throws SQLException {
-        // TODO is this a symmetric relationship?
         st = conn.createStatement();
         checkLoggedIn();
 
