@@ -186,7 +186,7 @@ public class PostgresSSH {
                 String query = "SELECT * FROM game_collection WHERE username = '" + username + "' order by name asc";
                 rs = st.executeQuery(query);
                 System.out.println("Your collections: ");
-                System.out.println("Format: Collection Name \t # VideoGames \t Total Play Time (HH:MM)");
+                System.out.println("Format: Collection Name, # VideoGames, Total Play Time (HH:MM)");
                 while (rs.next()) {
                     int time = Integer.parseInt(rs.getString(5));
                     int hours   = time / 60;
@@ -307,8 +307,15 @@ public class PostgresSSH {
                 try {
                     System.out.println("Which collection would you like to delete?");
                     name = scanner.next();
-                    query = "DELETE FROM vg_collection where gc_id =" + getGC_ID(name) +
-                            "DELETE FROM game_collection WHERE name = '" + name + "'";
+                    query = "DELETE FROM vg_collection where gc_id =" + getGC_ID(name);
+                    st.executeQuery(query);
+                } catch (PSQLException e) {
+                    System.out.println("Games have been removed from collection.");
+                }
+
+                try {
+
+                    query = "DELETE FROM game_collection WHERE name = '" + name + "'";
                     st.executeQuery(query);
                 } catch (PSQLException e) {
                     System.out.println(name + " has been deleted!\n");
@@ -322,7 +329,7 @@ public class PostgresSSH {
     private static int getGC_ID(String gc_name) throws SQLException {
         st = conn.createStatement();
         int thisgc_id = 0;
-        String getGCID = "SELECT gc_id FROM game_collection WHERE title='" + gc_name + "' AND username = '" + username + "'";
+        String getGCID = "SELECT gc_id FROM game_collection WHERE name='" + gc_name + "' AND username = '" + username + "'";
 
         ResultSet rs = st.executeQuery(getGCID);
         if (rs.next()) {
