@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class PostgresSSH {
     static String username = "";
-    static int gc_id = 3002;
+    static int gc_id = 3016;
     static Connection conn = null;
     static Statement st;
 
@@ -193,6 +193,7 @@ public class PostgresSSH {
                 while (rs.next()) {
                     System.out.println(rs.getString(3) + "\t" + rs.getString(4) + "\t" + rs.getString(5));
                 }
+                System.out.println();
                 break;
             case 2:
                 // WORKS!!
@@ -221,7 +222,7 @@ public class PostgresSSH {
                         query = "UPDATE game_collection set name ='" + updated + "' WHERE name = '" + collection + "'";
                         st.executeQuery(query);
                     } catch (PSQLException e) {
-                        System.out.println(collection + " has been changed to " + updated + "!");
+                        System.out.println(collection + " has been changed to " + updated + "!\n");
                     }
 
                 } else if (choice == 2) {
@@ -263,7 +264,7 @@ public class PostgresSSH {
                     query = "INSERT INTO game_collection VALUES (" + gc_id + ", '" + username + "', '" + name + "')";
                     st.executeQuery(query);
                 } catch (PSQLException e) {
-                    System.out.println(name + " has been created!");
+                    System.out.println(name + " has been created!\n");
                 }
                 break;
             case 4:
@@ -275,7 +276,7 @@ public class PostgresSSH {
                     query = "DELETE FROM game_collection WHERE name = '" + name + "'";
                     st.executeQuery(query);
                 } catch (PSQLException e) {
-                    System.out.println(name + " has been deleted!");
+                    System.out.println(name + " has been deleted!\n");
                 }
                 break;
             default:
@@ -298,6 +299,23 @@ public class PostgresSSH {
             menu();
         }
         return vg_id;
+    }
+
+    private static String getVGName(int vg_id) throws SQLException {
+        st = conn.createStatement();
+        String title = "";
+        String getVGID = "SELECT title FROM video_game WHERE vg_id='" + vg_id + "'";
+
+        ResultSet rs = st.executeQuery(getVGID);
+        if (rs.next()) {
+            title = rs.getString(1);
+        }
+
+        if (title.equals("")) {
+            System.out.println("Not a valid video game.\n");
+            menu();
+        }
+        return title;
     }
 
     private static void searchGames() throws SQLException {
@@ -334,10 +352,15 @@ public class PostgresSSH {
         st = conn.createStatement();
         checkLoggedIn();
         Scanner scanner = new Scanner(System.in);
-        System.out.println("1) Play Game\n2) Play Random Game!\n");
+        System.out.println("1) Play Game\n2) Play Random Game!\n>");
         int choice = scanner.nextInt();
         switch (choice) {
-            case 1 -> searchGames();
+            case 1 -> {
+                System.out.println("Which game would you like to play?");
+                String name = scanner.next();
+                int vg_id = getVG_ID(name);
+                playSpecificGame(vg_id);
+            }
             case 2 -> {
                 // random seed and choose game?
                 System.out.println("Random game!");
@@ -347,7 +370,23 @@ public class PostgresSSH {
             default -> {
             }
         }
+    }
 
+    private static void playSpecificGame(int vg_id) throws SQLException {
+        st = conn.createStatement();
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine();
+        System.out.println("When did you start playing? (Put in format YYYY-MM-DD HH:MM)");
+        String start_time = scanner.nextLine() + ":00.000000";
+        System.out.println("When did you end playing? (Put in format YYYY-MM-DD HH:MM)");
+        String end_time = scanner.nextLine() + ":00.000000";
+        try {
+            String query = "INSERT into game_play VALUES ('" + username + "', " + vg_id +
+                    ", '" + start_time + "', '" + end_time + "')";
+            st.executeQuery(query);
+        } catch (SQLException e) {
+            System.out.println("\nPlayed " + getVGName(vg_id) + "!\n");
+        }
     }
 
     // WORKS!!
