@@ -3,12 +3,14 @@ import com.jcraft.jsch.*;
 import org.postgresql.util.PSQLException;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Scanner;
 
 
 public class PostgresSSH {
     static String username = "";
+    static int gc_id = 3017;
     static int gc_id = 3016;
     static Connection conn = null;
     static Statement st;
@@ -232,6 +234,29 @@ public class PostgresSSH {
                     vg_id = getVG_ID(vg_name);
 
                     // TODO add a complex query here to check if this videogames' platform is one of the users platform
+                    String get_platform = "SELECT platform_name FROM hosts WHERE vg_id = '" + vg_id + "'";
+                    rs = st.executeQuery(get_platform);
+                    ArrayList<String> vg_platform = new ArrayList<>();
+                    String user_platform = "";
+                    while (rs.next()){
+                        vg_platform.add(rs.getString(1));
+                    }
+                    String check_compatibility = "SELECT platform_name FROM user_platform WHERE username = '" + username + "'";
+                    rs = st.executeQuery(check_compatibility);
+                    if (rs.next()) {
+                        user_platform = rs.getString(1);
+                    }
+                    boolean compatible = false;
+                    for (int i = 0; i < vg_platform.size(); i++ ) {
+                        if (user_platform.equals(vg_platform.get(i))){
+                            compatible = true;
+                            break;
+                        }
+                    }
+                    if (!compatible){
+                        System.out.println("Warning: the platform you own is not compatible with this game.");
+                    }
+
 
                     try {
                         query = "INSERT into vg_collection VALUES (" + vg_id + ", " + gamecoll_id + ")";
