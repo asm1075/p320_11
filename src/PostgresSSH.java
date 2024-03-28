@@ -177,7 +177,7 @@ public class PostgresSSH {
         System.out.println("Your Collections: \n");
         int choice;
         System.out.println("""
-                1) View collection
+                1) View Collections
                 2) Edit Collection
                 3) Create Collection
                 4) Delete Collection
@@ -185,14 +185,14 @@ public class PostgresSSH {
         choice = scanner.nextInt();
         switch (choice) {
             case 1:
-                String query = "SELECT * FROM game_collection WHERE username =" + username + " order by username asc";
+                // WORKS
+                String query = "SELECT * FROM game_collection WHERE username = '" + username + "' order by name asc";
                 rs = st.executeQuery(query);
+                System.out.println("Your collections: ");
+                System.out.println("Format: Collection Name \t # VideoGames \t Total Play Time");
                 while (rs.next()) {
-                    System.out.print("Column 1 returned ");
-                    System.out.println(rs.getString(1));
+                    System.out.println(rs.getString(3) + "\t" + rs.getString(4) + "\t" + rs.getString(5));
                 }
-                // TODO print out all collections in alphabetical order
-                // TODO display number of games in collection and total play time in hours: minutes
                 break;
             case 2:
                 // WORKS!!
