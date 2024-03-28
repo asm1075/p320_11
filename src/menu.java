@@ -58,7 +58,8 @@ public class menu {
 
     /**
      * Statement st = conn.createStatement();
-     * ResultSet rs = st.executeQuery("SELECT * FROM mytable WHERE columnfoo = 500");
+     * String query = "SELECT * FROM mytable WHERE columnfoo = 500";
+     * ResultSet rs = st.executeQuery(query);
      * while (rs.next()) {
      *     System.out.print("Column 1 returned ");
      *     System.out.println(rs.getString(1));

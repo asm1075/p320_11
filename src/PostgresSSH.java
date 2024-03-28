@@ -75,33 +75,25 @@ public class PostgresSSH {
 
     public static void menu() throws SQLException {
         Scanner scanner = new Scanner(System.in);
-        int choice = 0;
-        while (choice != 8) {
+        int choice;
+        while (true) {
             System.out.println("Welcome " + username + "!");
             System.out.print("""
                     Menu:
                     1) Create an account
                     2) Log in
                     3) View/Edit collections
-                         a) edit collection
-                           - edit collection name
-                            - delete game
-                         b) create collection
-                         c) delete collection
                     4) Search games
                          a) sort by
                          b) add game to collection
-                         c) play game - make sure player owns platform
-                         d) rate game
                     5) Play game
                          a) play random game
-                         b) search game --> (aka goes to menu option 4)\s
-                    6) Search friends
-                         a) follow
-                         b) unfollow
-                    7) Log Out
-                    8) Exit Program
-                    > 
+                         b) play specific game - make sure player owns platform
+                    6) Rate game
+                    7) Search friends
+                    8) Log Out
+                    9) Exit Program
+                    >
                     """);
             choice = scanner.nextInt();
 
@@ -111,9 +103,10 @@ public class PostgresSSH {
                 case 3 -> viewEditCollections();
                 case 4 -> searchGames();
                 case 5 -> playGame();
-                case 6 -> searchFriends();
-                case 7 -> logOut();
-                case 8 -> {
+                case 6 -> rateGame();
+                case 7 -> searchFriends();
+                case 8 -> logOut();
+                case 9 -> {
                     return;
                 }
                 default -> System.out.println("Invalid Input, please enter a number from the menu.");
@@ -148,7 +141,6 @@ public class PostgresSSH {
 
     // WORKS!!
     private static void logIn() throws SQLException {
-
         st = conn.createStatement();
         Scanner scanner = new Scanner(System.in);
         System.out.println("User exists, log into their account");
@@ -158,19 +150,17 @@ public class PostgresSSH {
         String pass = scanner.next();
 
         String getPassword = "SELECT password FROM player WHERE username='" + user + "'";
-        try {
-            ResultSet rs = st.executeQuery(getPassword);
-            if(rs.next()){
-                if (pass.equals(rs.getString(1))) {
-                    username = user;
-                    System.out.println("Welcome " + username + ". You are logged in!\n");
-                } else {
-                    System.out.println("Incorrect password. Womp womp :/");
-                    return;
-                }
+        ResultSet rs = st.executeQuery(getPassword);
+        if(rs.next()) {
+            if (pass.equals(rs.getString(1))) {
+                username = user;
+                System.out.println("Welcome " + username + ". You are logged in!\n");
+            } else {
+                System.out.println("Incorrect password. Womp womp :/\n");
+                return;
             }
-        } catch (PSQLException e) {
-
+        } else {
+            System.out.println("Username does not exist.  Please create an account. \n");
         }
 
         try {
@@ -183,34 +173,32 @@ public class PostgresSSH {
 
     private static void viewEditCollections() throws SQLException {
         st = conn.createStatement();
-        if (username.equals("")) {
-            System.out.println("You are not logged in");
-            return;
-        }
-
-
+        checkLoggedIn();
         Scanner scanner = new Scanner(System.in);
+        ResultSet rs;
         System.out.println("Your Collections: \n");
         int choice;
-        System.out.println("1) View collection\n 2) Edit Collection\n 3) Create Collection" +
-                "\n 4) Delete Collection\n> ");
+        System.out.println("""
+                1) View collection
+                2) Edit Collection
+                3) Create Collection
+                4) Delete Collection
+                >\s""");
         choice = scanner.nextInt();
         switch (choice) {
             case 1:
-                // start SQL codeblock here
                 String query = "SELECT * FROM game_collection WHERE username =" + username + " order by username asc";
-                ResultSet rs = st.executeQuery(query);
+                rs = st.executeQuery(query);
                 while (rs.next()) {
                     System.out.print("Column 1 returned ");
                     System.out.println(rs.getString(1));
                 }
-                // end SQL codeblock here
-
-                //TODO display number of games in collection and total play time in hours: minutes
+                // TODO print out all collections in alphabetical order
+                // TODO display number of games in collection and total play time in hours: minutes
                 break;
             case 2:
                 // WORKS!!
-                System.out.println("1) Edit Collection Name\n 2) Delete Game\n");
+                System.out.print("1) Edit Collection Name\n2) Delete Game\n>");
                 choice = scanner.nextInt();
                 if (choice == 1) {
                     try {
@@ -224,16 +212,34 @@ public class PostgresSSH {
 
                     }
                 } else if (choice == 2) {
-                    try {
-                        System.out.println("Which video game would you like to remove (video game ID)?");
-                        int vg_id = scanner.nextInt();
-                        System.out.println("Which collection would you like to remove this video game from?");
-                        String collection = scanner.next();
-                        query = "DELETE FROM game_collection WHERE vg_id = " + vg_id + " AND name = '" + collection + "'";
-                        st.executeQuery(query);
-                    } catch (PSQLException e) {
+                    // TODO isn't reading input correctly :(
+                    int gamecoll_id = 0;
+                    int vg_id = 0;
+                    System.out.println("Which video game would you like to remove?");
+                    String vg_name = scanner.next();
+                    System.out.println("Which collection would you like to remove this video game from?");
+                    String collection = scanner.nextLine();
+                    String getVGID = "SELECT vg_id FROM video_game WHERE name='" + vg_name + "'";
+                    String getCID = "SELECT gc_id FROM game_collection WHERE name='" + collection + "'";
 
+                    rs = st.executeQuery(getVGID);
+                    if (rs.next()) {
+                        vg_id = rs.getInt(1);
                     }
+
+                    rs = st.executeQuery(getCID);
+                    if (rs.next()) {
+                        gamecoll_id = rs.getInt(1);
+                    }
+
+                    if (gamecoll_id == 0 || vg_id == 0) {
+                        System.out.println("Not a valid video game or collection.");
+                        return;
+                    }
+                    try {
+                        query = "DELETE FROM vg_collection WHERE vg_id = " + vg_id + " AND gc_id = '" + gamecoll_id + "'";
+                        st.executeQuery(query);
+                    } catch (PSQLException e) { }
                 } else {
                     System.out.println("Not an option, womp womp.");
                 }
@@ -263,12 +269,12 @@ public class PostgresSSH {
                 break;
             default:
                 // go back to main menu because you suck for not entering something correctly
-                return;
         }
     }
 
     private static void searchGames() throws SQLException {
         st = conn.createStatement();
+        checkLoggedIn();
         Scanner scanner = new Scanner(System.in);
         System.out.println("Search by (title, platform, release date, developers, price, and genre): \n");
 
@@ -314,36 +320,68 @@ public class PostgresSSH {
                 // add entry with those inputs
                 break;
             default:
-                return;
         }
     }
 
     private static void playGame() throws SQLException {
         st = conn.createStatement();
+        checkLoggedIn();
         Scanner scanner = new Scanner(System.in);
         System.out.println("1) Play Game\n2) Play Random Game!\n");
         int choice = scanner.nextInt();
         switch (choice) {
-            case 1:
-                searchGames();
-                break;
-            case 2:
+            case 1 -> searchGames();
+            case 2 -> {
                 // random seed and choose game?
+                System.out.println("Random game!");
                 System.out.println("Game you're playing: "); // chosen game
-                // mark that game as played and add play time
-            default:
-                return;
+            }
+            // mark that game as played and add play time
+            default -> {
+            }
         }
 
     }
 
     // WORKS!!
-    private static void searchFriends() throws SQLException {
+    private static void rateGame() throws SQLException {
         st = conn.createStatement();
-        if (username.equals("")) {
-            System.out.println("You are not logged in");
+        checkLoggedIn();
+        Scanner scanner = new Scanner(System.in);
+        int vg_id = 0;
+        System.out.println("What game would you like to rate?");
+        String vg_name = scanner.next();
+
+        String getVGID = "SELECT vg_id FROM video_game WHERE title ='" + vg_name + "'";
+        ResultSet rs = st.executeQuery(getVGID);
+        if (rs.next()) {
+            vg_id = rs.getInt(1);
+        }
+
+        if (vg_id == 0) {
+            System.out.println("Video game doesn't exist.\n");
             return;
         }
+
+        System.out.println("What score would you like to give it (0-5)?");
+        int score = scanner.nextInt();
+        System.out.println("Any comments? (Up to 320 characters)");
+        String comment = scanner.next();
+
+        try {
+            String query = "INSERT INTO user_rating VALUES ('" + username + "', " + vg_id + ", " + score + ", '" + comment + "')";
+            st.executeQuery(query);
+        } catch (PSQLException e) { }
+        System.out.println(vg_name + "has been rated with a score of " + score + " and the comment \"" + comment + "\"!\n");
+
+
+    }
+
+    // WORKS!!
+    private static void searchFriends() throws SQLException {
+        // TODO is this a symmetric relationship?
+        st = conn.createStatement();
+        checkLoggedIn();
 
         System.out.println("1) Follow \n2) Unfollow\n");
         Scanner scanner = new Scanner(System.in);
@@ -389,14 +427,21 @@ public class PostgresSSH {
                 // end SQL codeblock here
             }
             default -> {
-                return;
             }
         }
     }
 
     private static void logOut() {
         username = "";
-        System.out.println("You're logged out! Byeeee");
+        System.out.println("You're logged out! Goodbye!");
+    }
+
+    private static void checkLoggedIn() throws SQLException {
+        if (username.equals("")) {
+            System.out.println("You are not logged in. " +
+                    "Please log in or create an account before continuing.\n");
+            menu();
+        }
     }
 
 
