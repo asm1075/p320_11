@@ -3,14 +3,13 @@ import com.jcraft.jsch.*;
 import org.postgresql.util.PSQLException;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Scanner;
 
 
 public class PostgresSSH {
     static String username = "";
-    static int gc_id = 3017;
+    static int gc_id = 3016;
     static Connection conn = null;
     static Statement st;
 
@@ -85,10 +84,7 @@ public class PostgresSSH {
                     2) Log in
                     3) View/Edit collections
                     4) Search games
-                         a) sort by
                     5) Play game
-                         a) play random game
-                         b) play specific game - make sure player owns platform
                     6) Rate game
                     7) Search friends
                     8) Log Out
@@ -190,10 +186,15 @@ public class PostgresSSH {
                 String query = "SELECT * FROM game_collection WHERE username = '" + username + "' order by name asc";
                 rs = st.executeQuery(query);
                 System.out.println("Your collections: ");
-                System.out.println("Format: Collection Name \t # VideoGames \t Total Play Time");
+                System.out.println("Format: Collection Name \t # VideoGames \t Total Play Time (HH:MM)");
                 while (rs.next()) {
-                    System.out.println(rs.getString(3) + "\t" + rs.getString(4) + "\t" + rs.getString(5));
+                    int time = Integer.parseInt(rs.getString(5));
+                    int hours   = time / 60;
+                    int minutes = time % 60;
+                    System.out.print(rs.getString(3) + "\t" + rs.getString(4) + "\t");
+                    System.out.printf("%d:%02d\n", hours, minutes);
                 }
+                System.out.println();
                 break;
             case 2:
                 // WORKS!!
@@ -222,7 +223,7 @@ public class PostgresSSH {
                         query = "UPDATE game_collection set name ='" + updated + "' WHERE name = '" + collection + "'";
                         st.executeQuery(query);
                     } catch (PSQLException e) {
-                        System.out.println(collection + " has been changed to " + updated + "!");
+                        System.out.println(collection + " has been changed to " + updated + "!\n");
                     }
 
                 } else if (choice == 2) {
@@ -231,29 +232,6 @@ public class PostgresSSH {
                     vg_id = getVG_ID(vg_name);
 
                     // TODO add a complex query here to check if this videogames' platform is one of the users platform
-                    String get_platform = "SELECT platform_name FROM hosts WHERE vg_id = '" + vg_id + "'";
-                    rs = st.executeQuery(get_platform);
-                    ArrayList<String> vg_platform = new ArrayList<>();
-                    String user_platform = "";
-                    while (rs.next()){
-                        vg_platform.add(rs.getString(1));
-                    }
-                    String check_compatibility = "SELECT platform_name FROM user_platform WHERE username = '" + username + "'";
-                    rs = st.executeQuery(check_compatibility);
-                    if (rs.next()) {
-                        user_platform = rs.getString(1);
-                    }
-                    boolean compatible = false;
-                    for (int i = 0; i < vg_platform.size(); i++ ) {
-                        if (user_platform.equals(vg_platform.get(i))){
-                            compatible = true;
-                            break;
-                        }
-                    }
-                    if (!compatible){
-                        System.out.println("Warning: the platform you own is not compatible with this game.");
-                    }
-
 
                     try {
                         query = "INSERT into vg_collection VALUES (" + vg_id + ", " + gamecoll_id + ")";
@@ -287,7 +265,7 @@ public class PostgresSSH {
                     query = "INSERT INTO game_collection VALUES (" + gc_id + ", '" + username + "', '" + name + "')";
                     st.executeQuery(query);
                 } catch (PSQLException e) {
-                    System.out.println(name + " has been created!");
+                    System.out.println(name + " has been created!\n");
                 }
                 break;
             case 4:
@@ -299,7 +277,7 @@ public class PostgresSSH {
                     query = "DELETE FROM game_collection WHERE name = '" + name + "'";
                     st.executeQuery(query);
                 } catch (PSQLException e) {
-                    System.out.println(name + " has been deleted!");
+                    System.out.println(name + " has been deleted!\n");
                 }
                 break;
             default:
@@ -322,6 +300,23 @@ public class PostgresSSH {
             menu();
         }
         return vg_id;
+    }
+
+    private static String getVGName(int vg_id) throws SQLException {
+        st = conn.createStatement();
+        String title = "";
+        String getVGID = "SELECT title FROM video_game WHERE vg_id='" + vg_id + "'";
+
+        ResultSet rs = st.executeQuery(getVGID);
+        if (rs.next()) {
+            title = rs.getString(1);
+        }
+
+        if (title.equals("")) {
+            System.out.println("Not a valid video game.\n");
+            menu();
+        }
+        return title;
     }
 
     private static void searchGames() throws SQLException {
@@ -354,24 +349,64 @@ public class PostgresSSH {
         }
     }
 
+    // WORKS!!
     private static void playGame() throws SQLException {
         st = conn.createStatement();
         checkLoggedIn();
         Scanner scanner = new Scanner(System.in);
-        System.out.println("1) Play Game\n2) Play Random Game!\n");
+        System.out.println("1) Play Game\n2) Play Random Game!\n>");
         int choice = scanner.nextInt();
         switch (choice) {
-            case 1 -> searchGames();
-            case 2 -> {
-                // random seed and choose game?
-                System.out.println("Random game!");
-                System.out.println("Game you're playing: "); // chosen game
+            case 1 -> {
+                System.out.println("Which game would you like to play?");
+                String name = scanner.next();
+                int vg_id = getVG_ID(name);
+                playSpecificGame(vg_id);
             }
-            // mark that game as played and add play time
+            case 2 -> {
+                int vg_id;
+                System.out.println("Random game!");
+                String query = """
+                        SELECT vg_id FROM video_game\s
+                        OFFSET floor(random() * (SELECT COUNT(*)\s
+                        FROM video_game)) LIMIT 1;""";
+                ResultSet rs = st.executeQuery(query);
+                if (rs.next()) {
+                    vg_id = rs.getInt(1);
+                    System.out.println(vg_id + " Game you're playing: " + getVGName(vg_id));
+                    playSpecificGame(vg_id);
+                }
+            }
             default -> {
             }
         }
+    }
 
+    private static void playSpecificGame(int vg_id) throws SQLException {
+        st = conn.createStatement();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("When did you start playing? (Put in format YYYY-MM-DD HH:MM)");
+        String start_time = scanner.nextLine() + ":00.000000";
+        System.out.println("When did you end playing? (Put in format YYYY-MM-DD HH:MM)");
+        String end_time = scanner.nextLine() + ":00.000000";
+        try {
+            String query = "INSERT into game_play VALUES ('" + username + "', " + vg_id +
+                    ", '" + start_time + "', '" + end_time + "')";
+            st.executeQuery(query);
+        } catch (SQLException e) {
+            System.out.println("\nPlayed " + getVGName(vg_id) + "!\n");
+        }
+
+//        // TODO add this code to add game to collection/delete game from collection
+//        // check if it's in a collection and then update the sum_gameplay time of that collection
+//        String subQuery = "Select gc_id from vg_collection where vg_id = " + vg_id + ")"; // gets gc_ids
+//        String query = "Update game_collection set sum_gameplay_time - sum_gameplay_time + 45 where gc_id = (" + subQuery;
+//
+//        try {
+//            ResultSet rs = st.executeQuery(query);
+//        } catch (PSQLException e) {
+//            System.out.println("Updated gameplay time in relevant collections.");
+//        }
     }
 
     // WORKS!!
