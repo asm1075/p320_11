@@ -84,10 +84,7 @@ public class PostgresSSH {
                     2) Log in
                     3) View/Edit collections
                     4) Search games
-                         a) sort by
                     5) Play game
-                         a) play random game
-                         b) play specific game - make sure player owns platform
                     6) Rate game
                     7) Search friends
                     8) Log Out
@@ -189,9 +186,13 @@ public class PostgresSSH {
                 String query = "SELECT * FROM game_collection WHERE username = '" + username + "' order by name asc";
                 rs = st.executeQuery(query);
                 System.out.println("Your collections: ");
-                System.out.println("Format: Collection Name \t # VideoGames \t Total Play Time");
+                System.out.println("Format: Collection Name \t # VideoGames \t Total Play Time (HH:MM)");
                 while (rs.next()) {
-                    System.out.println(rs.getString(3) + "\t" + rs.getString(4) + "\t" + rs.getString(5));
+                    int time = Integer.parseInt(rs.getString(5));
+                    int hours   = time / 60;
+                    int minutes = time % 60;
+                    System.out.print(rs.getString(3) + "\t" + rs.getString(4) + "\t");
+                    System.out.printf("%d:%02d\n", hours, minutes);
                 }
                 System.out.println();
                 break;
@@ -348,6 +349,7 @@ public class PostgresSSH {
         }
     }
 
+    // WORKS!!
     private static void playGame() throws SQLException {
         st = conn.createStatement();
         checkLoggedIn();
@@ -362,11 +364,19 @@ public class PostgresSSH {
                 playSpecificGame(vg_id);
             }
             case 2 -> {
-                // random seed and choose game?
+                int vg_id;
                 System.out.println("Random game!");
-                System.out.println("Game you're playing: "); // chosen game
+                String query = """
+                        SELECT vg_id FROM video_game\s
+                        OFFSET floor(random() * (SELECT COUNT(*)\s
+                        FROM video_game)) LIMIT 1;""";
+                ResultSet rs = st.executeQuery(query);
+                if (rs.next()) {
+                    vg_id = rs.getInt(1);
+                    System.out.println(vg_id + " Game you're playing: " + getVGName(vg_id));
+                    playSpecificGame(vg_id);
+                }
             }
-            // mark that game as played and add play time
             default -> {
             }
         }
@@ -375,7 +385,6 @@ public class PostgresSSH {
     private static void playSpecificGame(int vg_id) throws SQLException {
         st = conn.createStatement();
         Scanner scanner = new Scanner(System.in);
-        scanner.nextLine();
         System.out.println("When did you start playing? (Put in format YYYY-MM-DD HH:MM)");
         String start_time = scanner.nextLine() + ":00.000000";
         System.out.println("When did you end playing? (Put in format YYYY-MM-DD HH:MM)");
@@ -387,6 +396,17 @@ public class PostgresSSH {
         } catch (SQLException e) {
             System.out.println("\nPlayed " + getVGName(vg_id) + "!\n");
         }
+
+//        // TODO add this code to add game to collection/delete game from collection
+//        // check if it's in a collection and then update the sum_gameplay time of that collection
+//        String subQuery = "Select gc_id from vg_collection where vg_id = " + vg_id + ")"; // gets gc_ids
+//        String query = "Update game_collection set sum_gameplay_time - sum_gameplay_time + 45 where gc_id = (" + subQuery;
+//
+//        try {
+//            ResultSet rs = st.executeQuery(query);
+//        } catch (PSQLException e) {
+//            System.out.println("Updated gameplay time in relevant collections.");
+//        }
     }
 
     // WORKS!!
