@@ -167,6 +167,7 @@ public class PostgresSSH {
         }
     }
 
+    // WORKS!!
     private static void viewEditCollections() throws SQLException {
         st = conn.createStatement();
         checkLoggedIn();
@@ -183,7 +184,6 @@ public class PostgresSSH {
         choice = scanner.nextInt();
         switch (choice) {
             case 1:
-                // WORKS
                 String query = "SELECT * FROM game_collection WHERE username = '" + username + "' order by name asc";
                 rs = st.executeQuery(query);
                 System.out.println("Your collections: ");
@@ -198,7 +198,6 @@ public class PostgresSSH {
                 System.out.println();
                 break;
             case 2:
-                // WORKS!!
                 System.out.print("1) Edit Collection Name\n2) Add Game\n3) Delete Game\n>");
                 choice = scanner.nextInt();
                 System.out.println("Which collection would you like to edit?");
@@ -232,7 +231,6 @@ public class PostgresSSH {
                     String vg_name = scanner.next();
                     vg_id = getVG_ID(vg_name);
 
-                    // TODO add a complex query here to check if this videogames' platform is one of the users platform
                     String get_platform = "SELECT platform_name FROM hosts WHERE vg_id = '" + vg_id + "'";
                     rs = st.executeQuery(get_platform);
                     ArrayList<String> vg_platform = new ArrayList<>();
@@ -246,8 +244,8 @@ public class PostgresSSH {
                         user_platform = rs.getString(1);
                     }
                     boolean compatible = false;
-                    for (int i = 0; i < vg_platform.size(); i++ ) {
-                        if (user_platform.equals(vg_platform.get(i))){
+                    for (String s : vg_platform) {
+                        if (user_platform.equals(s)) {
                             compatible = true;
                             break;
                         }
@@ -280,7 +278,6 @@ public class PostgresSSH {
                 }
                 break;
             case 3:
-                // WORKS!!
                 String name = "";
                 try {
                     System.out.print("Enter new collection name to create: ");
@@ -293,7 +290,6 @@ public class PostgresSSH {
                 }
                 break;
             case 4:
-                // WORKS!!
                 name = "";
                 try {
                     System.out.println("Which collection would you like to delete?");
