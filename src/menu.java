@@ -21,17 +21,14 @@ public class menu {
                     3) View/Edit collections
                          a) edit collection
                            - edit collection name
-                            - delete game
+                           - delete game
+                           - add game
                          b) create collection
                          c) delete collection
                     4) Search games
-                         a) sort by
-                         b) add game to collection
-                         c) play game - make sure player owns platform
-                         d) rate game
                     5) Play game
                          a) play random game
-                         b) search game --> (aka goes to menu option 4)\s
+                         b) play specific game - make sure player owns platform
                     6) Search friends
                          a) follow
                          b) unfollow

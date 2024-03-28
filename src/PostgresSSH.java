@@ -85,7 +85,6 @@ public class PostgresSSH {
                     3) View/Edit collections
                     4) Search games
                          a) sort by
-                         b) add game to collection
                     5) Play game
                          a) play random game
                          b) play specific game - make sure player owns platform
@@ -198,50 +197,56 @@ public class PostgresSSH {
                 break;
             case 2:
                 // WORKS!!
-                System.out.print("1) Edit Collection Name\n2) Delete Game\n>");
+                System.out.print("1) Edit Collection Name\n2) Add Game\n3) Delete Game\n>");
                 choice = scanner.nextInt();
+                System.out.println("Which collection would you like to edit?");
+                String collection = scanner.next();
+
+                int gamecoll_id = 0;
+                int vg_id;
+                String getCID = "SELECT gc_id FROM game_collection WHERE name='" + collection + "' AND username = '" + username + "'";
+                rs = st.executeQuery(getCID);
+                if (rs.next()) {
+                    gamecoll_id = rs.getInt(1);
+                }
+                if (gamecoll_id == 0) {
+                    System.out.println("Not a valid collection.\n");
+                    return;
+                }
+
                 if (choice == 1) {
                     try {
-                        System.out.println("Which collection name would you like to change?");
-                        String collection = scanner.next();
                         System.out.println("What would you like to change it to?");
                         String updated = scanner.next();
                         query = "UPDATE game_collection set name ='" + updated + "' WHERE name = '" + collection + "'";
                         st.executeQuery(query);
-                    } catch (PSQLException e) {
+                    } catch (PSQLException e) { }
 
-                    }
                 } else if (choice == 2) {
-                    // TODO isn't reading input correctly :(
-                    int gamecoll_id = 0;
-                    int vg_id = 0;
+                    System.out.println("Which video game would you like to add to " + collection + "?");
+                    String vg_name = scanner.next();
+                    vg_id = getVG_ID(vg_name);
+
+                    // TODO add a complex query here to check if this videogames' platform is one of the users platform
+
+                    try {
+                        query = "INSERT into vg_collection VALUES (" + vg_id + ", " + gamecoll_id + ")";
+                        st.executeQuery(query);
+                    } catch (PSQLException e) { }
+                    System.out.println("Added " + vg_name + " to " + collection + "!\n");
+
+                } else if (choice == 3) {
                     System.out.println("Which video game would you like to remove?");
                     String vg_name = scanner.next();
-                    System.out.println("Which collection would you like to remove this video game from?");
-                    String collection = scanner.nextLine();
-                    String getVGID = "SELECT vg_id FROM video_game WHERE name='" + vg_name + "'";
-                    String getCID = "SELECT gc_id FROM game_collection WHERE name='" + collection + "'";
+                    vg_id = getVG_ID(vg_name);
 
-                    rs = st.executeQuery(getVGID);
-                    if (rs.next()) {
-                        vg_id = rs.getInt(1);
-                    }
-
-                    rs = st.executeQuery(getCID);
-                    if (rs.next()) {
-                        gamecoll_id = rs.getInt(1);
-                    }
-
-                    if (gamecoll_id == 0 || vg_id == 0) {
-                        System.out.println("Not a valid video game or collection.");
-                        return;
-                    }
                     try {
                         query = "DELETE FROM vg_collection WHERE vg_id = " + vg_id + " AND gc_id = '" + gamecoll_id + "'";
                         st.executeQuery(query);
                     } catch (PSQLException e) { }
+                    System.out.println("Deleted " + vg_name + " from " + collection + "!\n");
                 } else {
-                    System.out.println("Not an option, womp womp.");
+                    System.out.println("Not an option, womp womp.\n");
                 }
                 break;
             case 3:
@@ -268,8 +273,25 @@ public class PostgresSSH {
                 }
                 break;
             default:
-                // go back to main menu because you suck for not entering something correctly
+                menu();
         }
+    }
+
+    private static int getVG_ID(String vg_name) throws SQLException {
+        st = conn.createStatement();
+        int vg_id = 0;
+        String getVGID = "SELECT vg_id FROM video_game WHERE title='" + vg_name + "'";
+
+        ResultSet rs = st.executeQuery(getVGID);
+        if (rs.next()) {
+            vg_id = rs.getInt(1);
+        }
+
+        if (vg_id == 0) {
+            System.out.println("Not a valid video game.\n");
+            menu();
+        }
+        return vg_id;
     }
 
     private static void searchGames() throws SQLException {
@@ -298,28 +320,7 @@ public class PostgresSSH {
                 // sort list by released year
                 break;
             default:
-                return; // because you can't stick to the menu options :(
-        }
-
-        System.out.println("Select game (type in primary key for video game pls):\n");
-        String videoGamePrimaryKey = scanner.next();
-        System.out.println("1) Add game to collection\n2) Play game\n3)Rate Game\n");
-        choice = scanner.nextInt();
-        switch (choice) {
-            case 1:
-                System.out.println("Collection to add game to: ");
-                // search for PK with collection name
-                // add videoGamePrimaryKey to collection
-                break;
-            case 2:
-                // uh just mark game as played??
-                // idrk how to do this one so do we jsut add a random time to playtime?
-                break;
-            case 3:
-                // fill out all fields of a rating from the rating table
-                // add entry with those inputs
-                break;
-            default:
+                menu(); // because you can't stick to the menu options :(
         }
     }
 
