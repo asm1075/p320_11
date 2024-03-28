@@ -130,9 +130,8 @@ public class PostgresSSH {
                     "', NOW(), NOW(), '" + email + "')";
             st.executeQuery(query);
         } catch (PSQLException e) {
-            // catches exception because nothing is being returned
+            System.out.println("Your account has been created " + username + "!\n");
         }
-
     }
 
 
@@ -254,7 +253,6 @@ public class PostgresSSH {
                         System.out.println("Warning: the platform you own is not compatible with this game.");
                     }
 
-
                     try {
                         query = "INSERT into vg_collection VALUES (" + vg_id + ", " + gamecoll_id + ")";
                         st.executeQuery(query);
@@ -283,7 +281,7 @@ public class PostgresSSH {
                     System.out.print("Enter new collection name to create: ");
                     name = scanner.next();
                     gc_id++;
-                    query = "INSERT INTO game_collection VALUES (" + gc_id + ", '" + username + "', '" + name + "')";
+                    query = "INSERT INTO game_collection VALUES (" + gc_id + ", '" + username + "', '" + name + "', 0, 0)";
                     st.executeQuery(query);
                 } catch (PSQLException e) {
                     System.out.println(name + " has been created!\n");
@@ -294,7 +292,8 @@ public class PostgresSSH {
                 try {
                     System.out.println("Which collection would you like to delete?");
                     name = scanner.next();
-                    query = "DELETE FROM game_collection WHERE name = '" + name + "'";
+                    query = "DELETE FROM vg_collection where gc_id =" + getGC_ID(name) +
+                            "DELETE FROM game_collection WHERE name = '" + name + "'";
                     st.executeQuery(query);
                 } catch (PSQLException e) {
                     System.out.println(name + " has been deleted!\n");
@@ -303,6 +302,23 @@ public class PostgresSSH {
             default:
                 menu();
         }
+    }
+
+    private static int getGC_ID(String gc_name) throws SQLException {
+        st = conn.createStatement();
+        int thisgc_id = 0;
+        String getGCID = "SELECT gc_id FROM game_collection WHERE title='" + gc_name + "' AND username = '" + username + "'";
+
+        ResultSet rs = st.executeQuery(getGCID);
+        if (rs.next()) {
+            thisgc_id = rs.getInt(1);
+        }
+
+        if (thisgc_id == 0) {
+            System.out.println("You don't have a collection by this name.\n");
+            menu();
+        }
+        return thisgc_id;
     }
 
     private static int getVG_ID(String vg_name) throws SQLException {
