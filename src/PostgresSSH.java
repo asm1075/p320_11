@@ -14,8 +14,6 @@ public class PostgresSSH {
     static Connection conn = null;
     static Statement st;
 
-
-
     public static void main(String[] args) throws SQLException {
 
         int lport = 5432;
@@ -267,6 +265,14 @@ public class PostgresSSH {
                         System.out.println("Collection game count has been updated.");
                     }
 
+                    // TODO don't have this hardcoded for next phase - asm
+                    try {
+                        query = "UPDATE game_collection set sum_gameplay_time = sum_gameplay_time + 10 WHERE name = '" + collection + "'";
+                        st.executeQuery(query);
+                    } catch (PSQLException e){
+                        System.out.println("Collection total gameplay time  has been updated.");
+                    }
+
                 } else if (choice == 3) {
                     System.out.println("Which video game would you like to remove?");
                     String vg_name = scanner.next();
@@ -284,6 +290,14 @@ public class PostgresSSH {
                         st.executeQuery(query);
                     } catch (PSQLException e){
                         System.out.println("Collection game count has been updated.");
+                    }
+
+                    // TODO don't have this hardcoded for next phase - asm
+                    try {
+                        query = "UPDATE game_collection set sum_gameplay_time = sum_gameplay_time - 10 WHERE name = '" + collection + "'";
+                        st.executeQuery(query);
+                    } catch (PSQLException e){
+                        System.out.println("Collection total gameplay time has been updated.");
                     }
 
                 } else {
