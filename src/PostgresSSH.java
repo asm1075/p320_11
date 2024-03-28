@@ -11,7 +11,6 @@ import java.util.Scanner;
 public class PostgresSSH {
     static String username = "";
     static int gc_id = 3017;
-    static int gc_id = 3016;
     static Connection conn = null;
     static Statement st;
 
