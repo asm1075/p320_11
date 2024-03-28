@@ -15,7 +15,6 @@ public class PostgresSSH {
     static Statement st;
 
     public static void main(String[] args) throws SQLException {
-
         int lport = 5432;
         String rhost = "starbug.cs.rit.edu";
         int rport = 5432;
@@ -167,7 +166,9 @@ public class PostgresSSH {
     // WORKS!!
     private static void viewEditCollections() throws SQLException {
         st = conn.createStatement();
-        checkLoggedIn();
+        if (!checkLoggedIn()) {
+            return;
+        }
         Scanner scanner = new Scanner(System.in);
         ResultSet rs;
         System.out.println("Your Collections: \n");
@@ -336,7 +337,7 @@ public class PostgresSSH {
                 }
                 break;
             default:
-                menu();
+                break;
         }
     }
 
@@ -424,7 +425,9 @@ public class PostgresSSH {
     // WORKS!!
     private static void playGame() throws SQLException {
         st = conn.createStatement();
-        checkLoggedIn();
+        if (!checkLoggedIn()) {
+            return;
+        }
         Scanner scanner = new Scanner(System.in);
         System.out.println("1) Play Game\n2) Play Random Game!\n>");
         int choice = scanner.nextInt();
@@ -484,7 +487,9 @@ public class PostgresSSH {
     // WORKS!!
     private static void rateGame() throws SQLException {
         st = conn.createStatement();
-        checkLoggedIn();
+        if (!checkLoggedIn()) {
+            return;
+        }
         Scanner scanner = new Scanner(System.in);
         int vg_id = 0;
         System.out.println("What game would you like to rate?");
@@ -518,8 +523,9 @@ public class PostgresSSH {
     // WORKS!!
     private static void searchFriends() throws SQLException {
         st = conn.createStatement();
-        checkLoggedIn();
-
+        if (!checkLoggedIn()) {
+            return;
+        }
         System.out.println("1) Follow \n2) Unfollow\n");
         Scanner scanner = new Scanner(System.in);
         int choice = scanner.nextInt();
@@ -568,12 +574,13 @@ public class PostgresSSH {
         System.out.println("You're logged out! Goodbye!");
     }
 
-    private static void checkLoggedIn() throws SQLException {
+    private static boolean checkLoggedIn() {
         if (username.equals("")) {
             System.out.println("You are not logged in. " +
                     "Please log in or create an account before continuing.\n");
-            menu();
+            return false;
         }
+        return true;
     }
 
 
