@@ -260,6 +260,13 @@ public class PostgresSSH {
                         System.out.println("Added " + vg_name + " to " + collection + "!\n");
                     }
 
+                    try {
+                        query = "UPDATE game_collection set num_games = num_games + 1 WHERE name = '" + collection + "'";
+                        st.executeQuery(query);
+                    } catch (PSQLException e){
+                        System.out.println("Collection game count has been updated.");
+                    }
+
                 } else if (choice == 3) {
                     System.out.println("Which video game would you like to remove?");
                     String vg_name = scanner.next();
@@ -271,6 +278,14 @@ public class PostgresSSH {
                     } catch (PSQLException e) {
                         System.out.println("Deleted " + vg_name + " from " + collection + "!\n");
                     }
+
+                    try {
+                        query = "UPDATE game_collection set num_games = num_games - 1 WHERE name = '" + collection + "'";
+                        st.executeQuery(query);
+                    } catch (PSQLException e){
+                        System.out.println("Collection game count has been updated.");
+                    }
+
                 } else {
                     System.out.println("Not an option, womp womp.\n");
                 }
