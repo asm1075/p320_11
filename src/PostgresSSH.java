@@ -522,6 +522,12 @@ public class PostgresSSH {
                 rs = st.executeQuery(query);
             }
         }
+        st2.close();
+        st3.close();
+        st4.close();
+        st5.close();
+        st6.close();
+        st7.close();
 
     }
 
