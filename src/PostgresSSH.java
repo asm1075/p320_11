@@ -498,9 +498,9 @@ public class PostgresSSH {
                         count++;
                     }
                     System.out.println("Star rating: " + (1.0)*(average/count));
-                }
-                else
+                } else {
                     System.out.println("Game has not yet been rated");
+                }
             }
             title.clear();
             esrb.clear();
@@ -510,8 +510,8 @@ public class PostgresSSH {
             start.clear();
             end.clear();
             rank.clear();
-            System.out.println("Would you like to sort by something else?");
-            System.out.println("1) Yes\n2)No");
+            System.out.println("\nWould you like to sort by something else?");
+            System.out.println("1) Yes\n2)No\n>");
             choice = scanner.nextInt();
             if (choice == 1) { // repeat that shiiiii if you desire
                 System.out.println("What would you like to sort by? (name, price, genre, release year)");
@@ -522,13 +522,6 @@ public class PostgresSSH {
                 rs = st.executeQuery(query);
             }
         }
-        st2.close();
-        st3.close();
-        st4.close();
-        st5.close();
-        st6.close();
-        st7.close();
-
     }
 
     // WORKS!!
