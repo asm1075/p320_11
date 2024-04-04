@@ -1,4 +1,5 @@
 package src;
+import src.createAccount;
 import com.jcraft.jsch.*;
 import org.postgresql.util.PSQLException;
 
@@ -92,7 +93,7 @@ public class PostgresSSH {
             choice = scanner.nextInt();
 
             switch (choice) {
-                case 1 -> createAccount();
+                case 1 -> src.createAccount.createAcc();
                 case 2 -> logIn();
                 case 3 -> viewEditCollections();
                 case 4 -> searchGames();
