@@ -36,7 +36,7 @@ public class searchGames {
             case 1 -> // search by title
                     "SELECT * FROM video_game WHERE title LIKE '" + keyword + "'";
             case 2 -> // search by platform
-                    "SELECT * FROM video_game WHERE vg_id IN(SELECT vg_id FROM hosts WHERE platform LIKE '" + keyword + "')";
+                    "SELECT * FROM video_game WHERE vg_id IN(SELECT vg_id FROM hosts WHERE platform_name LIKE '" + keyword + "')";
             case 3 -> // search by release date
                     "SELECT * FROM video_game WHERE release_date LIKE '" + keyword + "'";
             case 4 -> // search by developers
@@ -49,8 +49,11 @@ public class searchGames {
         };
         if(!query.equals("")) {
             ResultSet rs = st.executeQuery(query + " ORDER BY title, release_date ASC;");
-            while (choice != 2 && rs.next()) {
-                display(rs, st); // prints things out
+            while (choice != 2) {
+                while(rs.next()) {
+                    display(rs); // prints things out
+                    System.out.println("\n");
+                }
                 System.out.println("\nWould you like to sort by something else?");
                 System.out.println("1) Yes\n2) No\n>");
                 choice = scanner.nextInt();
@@ -83,32 +86,34 @@ public class searchGames {
         else // no option
             System.out.println("Not an option");
     }
-    private static void display(ResultSet rs, Statement st) throws SQLException{
+    private static void display(ResultSet rs) throws SQLException{
+        Statement dst = conn.createStatement();
         String title = rs.getString("title"); // get title
         String esrb = rs.getString("esrb_rating"); // get rating
         int vg_id = getVG_ID(rs.getString("title")); // get vg_id
-        ArrayList<String> developers = developers(st, vg_id); // get developers
-        String publisher = publisher(st, vg_id); // get publisher
-        ArrayList<String> platforms = platforms(st, vg_id); // get platforms
-        int playtime = playtime(st, vg_id);
-        double rating = rating(st, vg_id); // gets average rating
+        ArrayList<String> developers = developers(dst, vg_id); // get developers
+        String publisher = publisher(dst, vg_id); // get publisher
+        ArrayList<String> platforms = platforms(dst, vg_id); // get platforms
+        int playtime = playtime(dst, vg_id);
+        double rating = rating(dst, vg_id); // gets average rating
         System.out.println("Title: " + title); // print title
         System.out.print("Platform(s): " + platforms.get(0)); // print platform(s)
         for (int i = 1; i < platforms.size(); i++)
             System.out.print(", " + platforms.get(i));
         if(!developers.isEmpty()) // print developer(s)
-            System.out.println("\nDeveloper(s): " + developers.get(0));
+            System.out.print("\nDeveloper(s): " + developers.get(0));
         else
-            System.out.println("\nDeveloper(s): ");
+            System.out.print("\nDeveloper(s): ");
         for(int i = 1; i < developers.size(); i++)
-            System.out.println(", " + developers.get(i));
-        System.out.println("Publisher: " + publisher); // print publisher
+            System.out.print(", " + developers.get(i));
+        System.out.println("\nPublisher: " + publisher); // print publisher
         System.out.println("Playtime: " + playtime + " mins"); // print playtime
         System.out.println("ESRB Rating: " + esrb); // print esrb rating
         if(rating == 0.0) // print rating
             System.out.println("Game has not yet been rated");
         else
             System.out.println("Star rating: " + rating);
+        dst.close(); // close
     }
     private static ArrayList<String> developers(Statement st, int vg_id) throws SQLException {
         ArrayList<String> developers = new ArrayList<>();
