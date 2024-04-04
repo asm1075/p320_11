@@ -110,12 +110,20 @@ public class PostgresSSH {
 
     // WORKS!
     private static void createAccount() throws SQLException {
-        st = conn.createStatement();
-        Scanner scanner = new Scanner(System.in);
         try {
-            System.out.print("Creating an account for the user!");
+            st = conn.createStatement();
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Creating an account for the user! ");
             System.out.print("Enter your username: ");
             String username = scanner.next();
+            String query = "SELECT * FROM PLAYER WHERE username = '" + username + "'";
+            ResultSet rs = st.executeQuery(query);
+            while(rs.next()){ // check username duplicate
+                System.out.println("Username already exists. Please enter a new username:");
+                username = scanner.next();
+                query = "SELECT * FROM PLAYER WHERE username = '" + username + "'"; // check username duplicate
+                rs = st.executeQuery(query);
+            }
             System.out.print("Enter your DOB in the format year-month-day: ");
             String DOB = scanner.next();
             System.out.print("Enter your password: ");
@@ -123,23 +131,11 @@ public class PostgresSSH {
             System.out.print("Enter your email: ");
             String email = scanner.next();
 
-            String query = "INSERT into PLAYER VALUES ('" + username + "', '" + DOB + "', '" + pass +
+            query = "INSERT into PLAYER VALUES ('" + username + "', '" + DOB + "', '" + pass +
                     "', NOW(), NOW(), '" + email + "')";
             st.executeQuery(query);
         } catch (PSQLException e) {
             System.out.println("Your account has been created " + username + "!\n");
-        }
-        System.out.println("Do you have any existing platforms (y/n): ");
-        String ans = scanner.next();
-        if (ans.equals("y")) {
-            try {
-                System.out.println("Enter your platform: ");
-                String existing_platform = scanner.next();
-                String query = "INSERT into USER_PLATFORM VALUES ('" + username + "', '" + existing_platform + "')";
-                st.executeQuery(query);
-            } catch (PSQLException e) {
-                System.out.println("Your platform has been added to your account!\n");
-            }
         }
     }
 
@@ -173,19 +169,6 @@ public class PostgresSSH {
         } catch (PSQLException e) {
             System.out.println("Welcome " + username + ". You are logged in!\n");
         }
-        System.out.println("Do you want to add any platforms (y/n): ");
-        String ans = scanner.next();
-        if (ans.equals("y")) {
-            try {
-                System.out.println("Enter your platform: ");
-                String existing_platform = scanner.next();
-                String query = "INSERT into USER_PLATFORM VALUES ('" + username + "', '" + existing_platform + "')";
-                st.executeQuery(query);
-            } catch (PSQLException e) {
-                System.out.println("Your platform has been added to your account!\n");
-            }
-        }
-
     }
 
     // WORKS!!
@@ -671,8 +654,13 @@ public class PostgresSSH {
                     String getUsername = "SELECT username FROM player WHERE email ='" + email + "'";
                     ResultSet rs = st.executeQuery(getUsername);
                     if (rs.next()) { // makes sure there is space and exists
-                        String makeFriendship = "INSERT INTO friendship VALUES ('" + username + "', '" + rs.getString(1) + "')";
-                        st.executeQuery(makeFriendship);
+                        String friend = rs.getString(1);
+                        if(!friend.equals(username)) { // no following yourself
+                            String makeFriendship = "INSERT INTO friendship VALUES ('" + username + "', '" + rs.getString(1) + "')";
+                            st.executeQuery(makeFriendship);
+                        }
+                        else
+                            System.out.println("You cannot follow yourself, silly goose!");
                     } else // no user found
                         System.out.println("There is no user associated with this account");
                 }
