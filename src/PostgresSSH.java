@@ -110,9 +110,9 @@ public class PostgresSSH {
 
     // WORKS!
     private static void createAccount() throws SQLException {
+        st = conn.createStatement();
+        Scanner scanner = new Scanner(System.in);
         try {
-            st = conn.createStatement();
-            Scanner scanner = new Scanner(System.in);
             System.out.print("Creating an account for the user!");
             System.out.print("Enter your username: ");
             String username = scanner.next();
@@ -128,6 +128,18 @@ public class PostgresSSH {
             st.executeQuery(query);
         } catch (PSQLException e) {
             System.out.println("Your account has been created " + username + "!\n");
+        }
+        System.out.println("Do you have any existing platforms (y/n): ");
+        String ans = scanner.next();
+        if (ans.equals("y")) {
+            try {
+                System.out.println("Enter your platform: ");
+                String existing_platform = scanner.next();
+                String query = "INSERT into USER_PLATFORM VALUES ('" + username + "', '" + existing_platform + "')";
+                st.executeQuery(query);
+            } catch (PSQLException e) {
+                System.out.println("Your platform has been added to your account!\n");
+            }
         }
     }
 
@@ -161,6 +173,19 @@ public class PostgresSSH {
         } catch (PSQLException e) {
             System.out.println("Welcome " + username + ". You are logged in!\n");
         }
+        System.out.println("Do you want to add any platforms (y/n): ");
+        String ans = scanner.next();
+        if (ans.equals("y")) {
+            try {
+                System.out.println("Enter your platform: ");
+                String existing_platform = scanner.next();
+                String query = "INSERT into USER_PLATFORM VALUES ('" + username + "', '" + existing_platform + "')";
+                st.executeQuery(query);
+            } catch (PSQLException e) {
+                System.out.println("Your platform has been added to your account!\n");
+            }
+        }
+
     }
 
     // WORKS!!
