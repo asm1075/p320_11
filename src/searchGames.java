@@ -31,7 +31,7 @@ public class searchGames {
         int search = scanner.nextInt();
         System.out.println("Enter your search keyword(s)");
         String keyword = scanner.next();
-        keyword = "%" + keyword + "%";
+        keyword = "%" + keyword + "%"; // makes searching not be sensitive to exact titles and things
         String query = switch (search) {
             case 1 -> // search by title
                     "SELECT * FROM video_game WHERE title LIKE '" + keyword + "'";
