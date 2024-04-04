@@ -654,8 +654,13 @@ public class PostgresSSH {
                     String getUsername = "SELECT username FROM player WHERE email ='" + email + "'";
                     ResultSet rs = st.executeQuery(getUsername);
                     if (rs.next()) { // makes sure there is space and exists
-                        String makeFriendship = "INSERT INTO friendship VALUES ('" + username + "', '" + rs.getString(1) + "')";
-                        st.executeQuery(makeFriendship);
+                        String friend = rs.getString(1);
+                        if(!friend.equals(username)) { // no following yourself
+                            String makeFriendship = "INSERT INTO friendship VALUES ('" + username + "', '" + rs.getString(1) + "')";
+                            st.executeQuery(makeFriendship);
+                        }
+                        else
+                            System.out.println("You cannot follow yourself, silly goose!");
                     } else // no user found
                         System.out.println("There is no user associated with this account");
                 }
