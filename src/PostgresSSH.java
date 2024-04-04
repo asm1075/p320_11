@@ -113,9 +113,17 @@ public class PostgresSSH {
         try {
             st = conn.createStatement();
             Scanner scanner = new Scanner(System.in);
-            System.out.print("Creating an account for the user!");
+            System.out.print("Creating an account for the user! ");
             System.out.print("Enter your username: ");
             String username = scanner.next();
+            String query = "SELECT * FROM PLAYER WHERE username = '" + username + "'";
+            ResultSet rs = st.executeQuery(query);
+            while(rs.next()){ // check username duplicate
+                System.out.println("Username already exists. Please enter a new username:");
+                username = scanner.next();
+                query = "SELECT * FROM PLAYER WHERE username = '" + username + "'"; // check username duplicate
+                rs = st.executeQuery(query);
+            }
             System.out.print("Enter your DOB in the format year-month-day: ");
             String DOB = scanner.next();
             System.out.print("Enter your password: ");
@@ -123,7 +131,7 @@ public class PostgresSSH {
             System.out.print("Enter your email: ");
             String email = scanner.next();
 
-            String query = "INSERT into PLAYER VALUES ('" + username + "', '" + DOB + "', '" + pass +
+            query = "INSERT into PLAYER VALUES ('" + username + "', '" + DOB + "', '" + pass +
                     "', NOW(), NOW(), '" + email + "')";
             st.executeQuery(query);
         } catch (PSQLException e) {
