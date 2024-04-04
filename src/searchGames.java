@@ -19,27 +19,69 @@ public class searchGames {
         checkLoggedIn();
         int choice = 0;
         Scanner scanner = new Scanner(System.in);
-        System.out.println("What would you like to search by? (title, platform, release date, developers, price, and genre)");
-        String search = scanner.next();
+        System.out.println("""
+                What would you like to search by?
+                1) title
+                2) platform
+                3) release date
+                4) developers
+                5) price
+                6) genre
+                >""");
+        int search = scanner.nextInt();
         System.out.println("Enter your search keyword(s)");
         String keyword = scanner.next();
-        // can only sort by title and MAYBE release date rn
-        String query = "SELECT * FROM video_game WHERE " + search + "='" + keyword + "' ORDER BY title, release_date ASC;";
-        ResultSet rs = st.executeQuery(query);
-        while(choice != 2 && rs.next()) {
-            display(rs, st);
-            System.out.println("\nWould you like to sort by something else?");
-            System.out.println("1) Yes\n2) No\n>");
-            choice = scanner.nextInt();
-            if (choice == 1) { // repeat that shiiiii if you desire
-                System.out.println("What would you like to sort by? (title, price, genre, release year)");
-                String sort = scanner.next();
-                System.out.println("Ascending (ASC) or descending (DSC) order?");
-                String order = scanner.next();
-                query = "SELECT * FROM video_game WHERE " + search + "='" + keyword + "' ORDER BY " + sort + " " + order + ";";
-                rs = st.executeQuery(query);
+        keyword = "%" + keyword + "%";
+        String query = switch (search) {
+            case 1 -> // search by title
+                    "SELECT * FROM video_game WHERE title LIKE '" + keyword + "'";
+            case 2 -> // search by platform
+                    "SELECT * FROM video_game WHERE vg_id IN(SELECT vg_id FROM hosts WHERE platform LIKE '" + keyword + "')";
+            case 3 -> // search by release date
+                    "SELECT * FROM video_game WHERE release_date LIKE '" + keyword + "'";
+            case 4 -> // search by developers
+                    "SELECT * FROM video_game WHERE vg_id IN(SELECT vg_id FROM develops WHERE dp_id IN(SELECT dp_id FROM dev_pub WHERE username LIKE '" + keyword + "'))";
+            case 5 -> // search by price
+                    "SELECT * FROM video_game WHERE price LIKE '" + keyword + "'";
+            case 6 -> // search by genre
+                    "SELECT * FROM video_game WHERE vg_id IN(SELECT vg_id FROM vg_genre WHERE g_id IN(SELECT g_id FROM genre WHERE name LIKE '" + keyword + "'))";
+            default -> ""; // not an option
+        };
+        if(!query.equals("")) {
+            ResultSet rs = st.executeQuery(query + " ORDER BY title, release_date ASC;");
+            while (choice != 2 && rs.next()) {
+                display(rs, st); // prints things out
+                System.out.println("\nWould you like to sort by something else?");
+                System.out.println("1) Yes\n2) No\n>");
+                choice = scanner.nextInt();
+                if (choice == 1) { // repeat that shiiiii if you desire
+                    System.out.println("""
+                    What would you like to sort by?
+                    1) title
+                    2) price
+                    3) genre
+                    4) release year
+                    >""");
+                    int sort = scanner.nextInt();
+                    System.out.println("Ascending (ASC) or descending (DSC) order?");
+                    String order = scanner.next();
+                    String end = switch(sort){
+                        case 1 -> // order by title
+                                " ORDER BY title " + order + ";";
+                        case 2 -> // order by price
+                            " ORDER BY price " + order + ";";
+                        case 3 -> // order by genre, ngl idk what that means so imma leave it
+                            "";
+                        case 4 -> // order by release year
+                            " ORDER BY release_year " + order + ";";
+                        default -> ""; // not an option, just sorts same as before
+                    };
+                    rs = st.executeQuery(query + end);
+                }
             }
         }
+        else // no option
+            System.out.println("Not an option");
     }
     private static void display(ResultSet rs, Statement st) throws SQLException{
         String title = rs.getString("title"); // get title
@@ -54,7 +96,10 @@ public class searchGames {
         System.out.print("Platform(s): " + platforms.get(0)); // print platform(s)
         for (int i = 1; i < platforms.size(); i++)
             System.out.print(", " + platforms.get(i));
-        System.out.println("\nDeveloper(s): " + developers.get(0)); // print developer(s)
+        if(!developers.isEmpty()) // print developer(s)
+            System.out.println("\nDeveloper(s): " + developers.get(0));
+        else
+            System.out.println("\nDeveloper(s): ");
         for(int i = 1; i < developers.size(); i++)
             System.out.println(", " + developers.get(i));
         System.out.println("Publisher: " + publisher); // print publisher
