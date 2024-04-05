@@ -43,9 +43,12 @@ public class userProfile {
             System.out.println(rs.getInt(1));
         }
 
-        // top 10 games by highest rating
+        // top 10 games owned by highest rating
+        query = "SELECT * FROM video_game WHERE vg_id IN(SELECT vg_id FROM game_play WHERE username= '" + username + "')";
+        rs = st.executeQuery(query);
+        // im tired will do later
 
-        System.out.println();
+
 
     }
 }

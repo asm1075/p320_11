@@ -91,7 +91,7 @@ public class searchGames {
         else // no option
             System.out.println("Not an option");
     }
-    private static void display(ResultSet rs) throws SQLException, ParseException {
+    public static void display(ResultSet rs) throws SQLException, ParseException {
         Statement dst = conn.createStatement();
         String title = rs.getString("title"); // get title
         String esrb = rs.getString("esrb_rating"); // get rating
