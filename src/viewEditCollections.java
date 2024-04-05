@@ -4,6 +4,7 @@ import org.postgresql.util.PSQLException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -11,11 +12,11 @@ import static src.PostgresSSH.*;
 
 public class viewEditCollections {
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, ParseException {
         viewEditCollections();
     }
 
-    static void viewEditCollections() throws SQLException {
+    static void viewEditCollections() throws SQLException, ParseException {
         st = conn.createStatement();
         if (!checkLoggedIn()) {
             return;

@@ -2,17 +2,18 @@ package src;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Scanner;
 
 import static src.PostgresSSH.*;
 
 public class playGame {
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, ParseException {
         play();
     }
 
-    static void play() throws SQLException {
+    static void play() throws SQLException, ParseException {
         st = conn.createStatement();
         if (!checkLoggedIn()) {
             return;
@@ -46,7 +47,7 @@ public class playGame {
         }
     }
 
-    static void playSpecificGame(int vg_id) throws SQLException {
+    static void playSpecificGame(int vg_id) throws SQLException, ParseException {
         st = conn.createStatement();
         Scanner scanner = new Scanner(System.in);
         System.out.println("When did you start playing? (Put in format YYYY-MM-DD HH:MM)");
