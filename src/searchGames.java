@@ -16,7 +16,9 @@ public class searchGames {
 
     static void search() throws SQLException {
         st = conn.createStatement();
-        checkLoggedIn();
+        if (!checkLoggedIn()) {
+            return;
+        }
         int choice = 0;
         Scanner scanner = new Scanner(System.in);
         System.out.println("""

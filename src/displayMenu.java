@@ -22,27 +22,29 @@ public class displayMenu {
                     Menu:
                     1) Create an account
                     2) Log in
-                    3) View/Edit collections
-                    4) Search games
-                    5) Play game
-                    6) Rate game
-                    7) Search friends
-                    8) Log Out
-                    9) Exit Program
+                    3) Display user profile
+                    4) View/Edit collections
+                    5) Search games
+                    6) Play game
+                    7) Rate game
+                    8) Search friends
+                    9) Log Out
+                    10) Exit Program
                     >
                     """);
             choice = scanner.nextInt();
 
             switch (choice) {
-                case 1 -> src.createAccount.createAcc();
+                case 1 -> createAccount.createAcc();
                 case 2 -> logIn.login();
-                case 3 -> src.viewEditCollections.viewEditCollections();
-                case 4 -> src.searchGames.search();
-                case 5 -> src.playGame.play();
-                case 6 -> src.rateGame.rate();
-                case 7 -> src.searchFriends.friend();
-                case 8 -> logOut();
-                case 9 -> {
+                case 3 -> userProfile.displayProfile();
+                case 4 -> viewEditCollections.viewEditCollections();
+                case 5 -> searchGames.search();
+                case 6 -> playGame.play();
+                case 7 -> rateGame.rate();
+                case 8 -> searchFriends.friend();
+                case 9 -> logOut();
+                case 10 -> {
                     return;
                 }
                 default -> System.out.println("Invalid Input, please enter a number from the menu.");
