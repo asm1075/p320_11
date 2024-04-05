@@ -2,6 +2,7 @@ package src;
 import com.jcraft.jsch.*;
 
 import java.sql.*;
+import java.text.ParseException;
 import java.util.Properties;
 
 import static src.displayMenu.menu;
@@ -67,7 +68,7 @@ public class PostgresSSH {
         }
     }
 
-    static int getGC_ID(String gc_name) throws SQLException {
+    static int getGC_ID(String gc_name) throws SQLException, ParseException {
         st = conn.createStatement();
         int thisgc_id = 0;
         String getGCID = "SELECT gc_id FROM game_collection WHERE name='" + gc_name + "' AND username = '" + username + "'";
@@ -84,7 +85,7 @@ public class PostgresSSH {
         return thisgc_id;
     }
 
-    static int getVG_ID(String vg_name) throws SQLException {
+    static int getVG_ID(String vg_name) throws SQLException, ParseException {
         st = conn.createStatement();
         int vg_id = 0;
         String getVGID = "SELECT vg_id FROM video_game WHERE title='" + vg_name + "'";
@@ -101,7 +102,7 @@ public class PostgresSSH {
         return vg_id;
     }
 
-    static String getVGName(int vg_id) throws SQLException {
+    static String getVGName(int vg_id) throws SQLException, ParseException {
         st = conn.createStatement();
         String title = "";
         String getVGID = "SELECT title FROM video_game WHERE vg_id='" + vg_id + "'";

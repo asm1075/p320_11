@@ -4,17 +4,20 @@ package src;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 import static src.PostgresSSH.*;
 
 public class searchGames {
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, ParseException {
         search();
     }
 
-    static void search() throws SQLException {
+    static void search() throws SQLException, ParseException {
         st = conn.createStatement();
         checkLoggedIn();
         int choice = 0;
@@ -86,7 +89,7 @@ public class searchGames {
         else // no option
             System.out.println("Not an option");
     }
-    private static void display(ResultSet rs) throws SQLException{
+    private static void display(ResultSet rs) throws SQLException, ParseException {
         Statement dst = conn.createStatement();
         String title = rs.getString("title"); // get title
         String esrb = rs.getString("esrb_rating"); // get rating
@@ -94,7 +97,7 @@ public class searchGames {
         ArrayList<String> developers = developers(dst, vg_id); // get developers
         String publisher = publisher(dst, vg_id); // get publisher
         ArrayList<String> platforms = platforms(dst, vg_id); // get platforms
-        int playtime = playtime(dst, vg_id);
+        long playtime = playtime(dst, vg_id);
         double rating = rating(dst, vg_id); // gets average rating
         System.out.println("Title: " + title); // print title
         System.out.print("Platform(s): " + platforms.get(0)); // print platform(s)
@@ -103,7 +106,7 @@ public class searchGames {
         if(!developers.isEmpty()) // print developer(s)
             System.out.print("\nDeveloper(s): " + developers.get(0));
         else
-            System.out.print("\nDeveloper(s): ");
+            System.out.print("\nNo Developers");
         for(int i = 1; i < developers.size(); i++)
             System.out.print(", " + developers.get(i));
         System.out.println("\nPublisher: " + publisher); // print publisher
@@ -112,7 +115,7 @@ public class searchGames {
         if(rating == 0.0) // print rating
             System.out.println("Game has not yet been rated");
         else
-            System.out.println("Star rating: " + rating);
+            System.out.println("Star rating: " + String.format("%.2f", rating)); // round and print
         dst.close(); // close
     }
     private static ArrayList<String> developers(Statement st, int vg_id) throws SQLException {
@@ -145,26 +148,22 @@ public class searchGames {
         for (Integer rating : ratings) average += rating; // add up average
         return !ratings.isEmpty() ? average / ratings.size() : 0; // avoid division by zero
     }
-    private static int playtime(Statement st, int vg_id) throws SQLException {
+    private static long playtime(Statement st, int vg_id) throws SQLException, ParseException {
         ArrayList<String> start = new ArrayList<>();
         ArrayList<String> end = new ArrayList<>();
-        int time = 0;
+        SimpleDateFormat data = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // this
+        long time = 0;
         ResultSet rs = st.executeQuery("SELECT start_time, end_time FROM game_play WHERE username='" + username + "'AND vg_id='" + vg_id + "'");
         while(rs.next()){ // get start and end times
             start.add(rs.getString("start_time"));
             end.add(rs.getString("end_time"));
         }
-        for(int i = 0; i < start.size(); i++){
-            int spaceS = start.get(i).indexOf(" "); // **get index of space, assuming playtime does not go over days**
-            int spaceE = end.get(i).indexOf(" ");
-            int hourS = Integer.parseInt(start.get(i).substring(spaceS+1, spaceS+3)); // hours start
-            spaceS = spaceS + 3;
-            int hourE = Integer.parseInt(start.get(i).substring(spaceE+1, spaceE+3)); // hours end
-            spaceE = spaceE + 3;
-            int minS = Integer.parseInt(start.get(i).substring(spaceS+1, spaceS+3)); // min start
-            int minE = Integer.parseInt(start.get(i).substring(spaceE+1, spaceE+3)); // min end
-            time += 60*Math.abs(hourS - hourE); // gets hours in min and adds
-            time += Math.abs(minS - minE); // gets mins and adds
+        for(int i = 0; i < start.size(); i++){ // calculate total play time
+            java.util.Date sTime = data.parse(start.get(i)); // change to date
+            java.util.Date eTime = data.parse(end.get(i));
+            long duration = Math.abs(eTime.getTime() - sTime.getTime()); // duration calculation
+            long min = TimeUnit.MILLISECONDS.toMinutes(duration); // convert to min
+            time+=min;
         }
         return time;
     }

@@ -1,5 +1,6 @@
 package src;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Scanner;
 
 import static src.PostgresSSH.username;
@@ -8,12 +9,12 @@ import static src.PostgresSSH.logOut;
 
 public class displayMenu {
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, ParseException {
         menu();
 
     }
 
-    static void menu() throws SQLException {
+    static void menu() throws SQLException, ParseException {
         Scanner scanner = new Scanner(System.in);
         int choice;
         while (true) {
