@@ -2,16 +2,20 @@ package src;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.Set;
+import java.util.TreeMap;
 
 import static src.PostgresSSH.*;
+import static src.searchGames.*;
 
 public class userProfile {
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, ParseException {
         displayProfile();
     }
 
-    static void displayProfile() throws SQLException {
+    static void displayProfile() throws SQLException, ParseException {
         if (!checkLoggedIn()) {
             return;
         }
@@ -46,9 +50,23 @@ public class userProfile {
         // top 10 games owned by highest rating
         query = "SELECT * FROM video_game WHERE vg_id IN(SELECT vg_id FROM game_play WHERE username= '" + username + "')";
         rs = st.executeQuery(query);
-        // im tired will do later
-
-
+        TreeMap<Double, Integer> rate = new TreeMap<>(); // trees sort by default
+        while(rs.next()){
+            int vg_id = getVG_ID(rs.getString("title"));
+            double r = rating(st, vg_id);
+            rate.put(r, vg_id); // sort by rating
+        }
+        int k = 1; // counter for listing top
+        System.out.println("\nTop 10 games you own!");
+        for(int i = 0; i < 10 && !rate.isEmpty(); i++){ // get top 10, if there are 10. breaks if empty
+            System.out.println("\n" + k++ + ".");
+            query = "SELECT * FROM video_game WHERE vg_id=" + rate.get(rate.lastKey()); // get the last key, which is greatest
+            rs = st.executeQuery(query);
+            if (rs.next())
+                display(rs); // display the info
+            rate.remove(rate.lastKey()); // remove last key
+        }
+        System.out.println("\n"); // new line for cleanliness
 
     }
 }

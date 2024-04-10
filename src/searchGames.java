@@ -141,7 +141,7 @@ public class searchGames {
             platforms.add(rs.getString("platform_name"));
         return platforms;
     }
-    private static double rating(Statement st, int vg_id) throws SQLException {
+    public static double rating(Statement st, int vg_id) throws SQLException {
         ArrayList<Integer> ratings = new ArrayList<>();
         ResultSet rs = st.executeQuery("SELECT score FROM user_rating WHERE vg_id='" + vg_id + "'");
         while (rs.next()) // gets ratings
