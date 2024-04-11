@@ -42,7 +42,7 @@ public class rateGame {
         String comment = scanner.next();
 
         try {
-            String query = "INSERT INTO user_rating VALUES ('" + username + "', " + vg_id + ", " + score + ", '" + comment + "')";
+            String query = "INSERT INTO user_rating VALUES ('" + username + "', " + vg_id + ", " + score + ", '" + comment + "', NOW())";
             st.executeQuery(query);
         } catch (PSQLException e) {
             System.out.println(vg_name + "has been rated with a score of " + score + " and the comment \"" + comment + "\"!\n");
