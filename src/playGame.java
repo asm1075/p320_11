@@ -64,13 +64,20 @@ public class playGame {
 
 //        // TODO add this code to add game to collection/delete game from collection
 //        // check if it's in a collection and then update the sum_gameplay time of that collection
-//        String subQuery = "Select gc_id from vg_collection where vg_id = " + vg_id + ")"; // gets gc_ids
-//        String query = "Update game_collection set sum_gameplay_time - sum_gameplay_time + 45 where gc_id = (" + subQuery;
 //
-//        try {
-//            ResultSet rs = st.executeQuery(query);
-//        } catch (PSQLException e) {
-//            System.out.println("Updated gameplay time in relevant collections.");
+//        String subQuery = "Select gc_id from vg_collection where vg_id = " + vg_id + ")"; // gets gc_ids
+//        String query = "Update game_collection set sum_gameplay_time = sum_gameplay_time +  where gc_id = (" + subQuery;
+//
+//        ResultSet gc = st.executeQuery(subQuery);
+//
+//        if (gc.next()){
+//            while (gc.next()) {
+//                try {
+//                    ResultSet rs = st.executeQuery(query);
+//                } catch (SQLException e) {
+//                    System.out.println("Updated gameplay time in relevant collections.");
+//                }
+//            }
 //        }
     }
 }
