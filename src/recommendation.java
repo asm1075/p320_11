@@ -33,7 +33,7 @@ public class recommendation {
             case 1 -> // last 90 days
                     "SELECT * FROM video_game WHERE vg_id IN(SELECT vg_id FROM user_rating WHERE rating_date >= CURRENT_DATE - INTERVAL '90 days')";
             case 2 -> // followers
-                    "";
+                    "SELECT * FROM video_game WHERE vg_id IN(SELECT vg_id FROM game_play WHERE username IN(SELECT username2 FROM friendship WHERE username1= '" + username + "'))";
             case 3 -> // new release
                 "SELECT title, release_date FROM video_game ORDER BY release_date DESC LIMIT 5;";
             default -> // not an option
