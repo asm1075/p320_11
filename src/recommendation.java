@@ -15,8 +15,9 @@ public class recommendation {
         recommend();
     }
     static void recommend() throws SQLException, ParseException{
-        if (!checkLoggedIn())
+        if (!checkLoggedIn()) {
             return;
+        }
         st = conn.createStatement();
         ResultSet rs;
         int search;
@@ -34,7 +35,7 @@ public class recommendation {
             case 2 -> // followers
                     "";
             case 3 -> // new release
-                "  ";
+                "SELECT title, release_date FROM video_game ORDER BY release_date DESC LIMIT 5;";
             default -> // not an option
                 "";
         };
@@ -57,6 +58,14 @@ public class recommendation {
                 rate.remove(rate.lastKey()); // remove last key
             }
             System.out.println("\n"); // new line for cleanliness
+        } else {
+            rs = st.executeQuery(query);
+            while (rs.next()) {
+
+                System.out.print(rs.getString(1));
+                System.out.println("\t Released on: " + rs.getString(2));
+            }
+            System.out.println();
         }
     }
 }
