@@ -31,7 +31,7 @@ public class recommendation {
         search = input.nextInt();
         String query = switch (search){
             case 1 -> // last 90 days
-                    "SEARCH * FROM video_game WHERE vg_id IN(SELECT vg_id FROM user_rating WHERE date >=DATE_SUB(CURDATE(), INTERVAL 90 DAY)) ORDER BY date_column DESC";
+                    "SELECT * FROM video_game WHERE vg_id IN(SELECT vg_id FROM user_rating WHERE rating_date >= CURRENT_DATE - INTERVAL '90 days')";
             case 2 -> // followers
                     "";
             case 3 -> // new release
