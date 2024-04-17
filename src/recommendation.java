@@ -35,12 +35,12 @@ public class recommendation {
             case 2 -> // followers
                     "SELECT * FROM video_game WHERE vg_id IN(SELECT vg_id FROM game_play WHERE username IN(SELECT username2 FROM friendship WHERE username1= '" + username + "'))";
             case 3 -> // new release
-                "SELECT title, release_date FROM video_game ORDER BY release_date DESC LIMIT 5;";
+                    "SELECT title, release_date FROM video_game ORDER BY release_date DESC LIMIT 5;";
             default -> // not an option
                 "";
         };
+        rs = st.executeQuery(query);
         if(search != 3){ // not case 3, top 20
-            rs = st.executeQuery(query);
             TreeMap<Double, Integer> rate = new TreeMap<>(); // trees sort by default
             while(rs.next()){
                 int vg_id = getVG_ID(rs.getString("title"));
@@ -59,7 +59,6 @@ public class recommendation {
             }
             System.out.println("\n"); // new line for cleanliness
         } else {
-            rs = st.executeQuery(query);
             while (rs.next()) {
 
                 System.out.print(rs.getString(1));
