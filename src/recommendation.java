@@ -27,23 +27,20 @@ public class recommendation {
                 1) Top 20 most popular video games in the last 90 days
                 2) Top 20 most popular video games among my followers
                 3) Top 5 new releases of the month
-                4) For you
                 >""");
         search = input.nextInt();
         String query = switch (search){
             case 1 -> // last 90 days
                     "SELECT * FROM video_game WHERE vg_id IN(SELECT vg_id FROM user_rating WHERE rating_date >= CURRENT_DATE - INTERVAL '90 days')";
             case 2 -> // followers
-                    "";
+                    "SELECT * FROM video_game WHERE vg_id IN(SELECT vg_id FROM game_play WHERE username IN(SELECT username2 FROM friendship WHERE username1= '" + username + "'))";
             case 3 -> // new release
-                "SELECT title, release_date FROM video_game ORDER BY release_date DESC LIMIT 5;";
-            case 4 -> // for you
-                "SELECT";
+                    "SELECT title, release_date FROM video_game ORDER BY release_date DESC LIMIT 5;";
             default -> // not an option
                 "";
         };
-        if (search != 3 && search != 4){ // not case 3, top 20
-            rs = st.executeQuery(query);
+        rs = st.executeQuery(query);
+        if(search != 3){ // not case 3, top 20
             TreeMap<Double, Integer> rate = new TreeMap<>(); // trees sort by default
             while(rs.next()){
                 int vg_id = getVG_ID(rs.getString("title"));
@@ -61,19 +58,13 @@ public class recommendation {
                 rate.remove(rate.lastKey()); // remove last key
             }
             System.out.println("\n"); // new line for cleanliness
-        } else if (search == 3){
-            rs = st.executeQuery(query);
+        } else {
             while (rs.next()) {
 
                 System.out.print(rs.getString(1));
                 System.out.println("\t Released on: " + rs.getString(2));
             }
             System.out.println();
-        } else if (search == 4) {
-
-        } else {
-            System.out.println("Invalid");
-            return;
         }
     }
 }
