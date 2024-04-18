@@ -51,7 +51,7 @@ public class recommendation {
                     rate.put(r, new ArrayList<>());
                 rate.get(r).add(vg_id); // add vg_id to the list associated with the rating
             }
-            int k = 1; // Counter for listing top
+            int k = 1; // counter for listing top
             System.out.println("\nTop 20 games!");
             for (Map.Entry<Double, List<Integer>> entry : rate.descendingMap().entrySet())
                 for (int vg_id : entry.getValue()) {
