@@ -3,8 +3,7 @@ package src;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Scanner;
-import java.util.TreeMap;
+import java.util.*;
 
 import static src.PostgresSSH.*;
 import static src.searchGames.display;
@@ -43,25 +42,30 @@ public class recommendation {
                 "";
         };
         rs = st.executeQuery(query);
-        if(search != 3 && search != 4){ // not case 3, top 20
-            TreeMap<Double, Integer> rate = new TreeMap<>(); // trees sort by default
-            while(rs.next()){
+        if(search != 3 && search != 4){ // not case 3 or 4, top 20
+            TreeMap<Double, List<Integer>> rate = new TreeMap<>();
+            while(rs.next()) {
                 int vg_id = getVG_ID(rs.getString("title"));
                 double r = rating(st, vg_id);
-                rate.put(r, vg_id); // sort by rating
+                if (!rate.containsKey(r))
+                    rate.put(r, new ArrayList<>());
+                rate.get(r).add(vg_id); // add vg_id to the list associated with the rating
             }
-            int k = 1; // counter for listing top
+            int k = 1; // Counter for listing top
             System.out.println("\nTop 20 games!");
-            for(int i = 0; i < 20 && !rate.isEmpty(); i++){ // get top 20, if there are 20. breaks if empty
-                System.out.println("\n" + k++ + ".");
-                query = "SELECT * FROM video_game WHERE vg_id=" + rate.get(rate.lastKey()); // get the last key, which is greatest
-                rs = st.executeQuery(query);
-                if (rs.next())
-                    display(rs); // display the info
-                rate.remove(rate.lastKey()); // remove last key
-            }
+            for (Map.Entry<Double, List<Integer>> entry : rate.descendingMap().entrySet())
+                for (int vg_id : entry.getValue()) {
+                    if(k > 20)
+                        break;
+                    System.out.println("\n" + k++ + ".");
+                    query = "SELECT * FROM video_game WHERE vg_id=" + vg_id;
+                    rs = st.executeQuery(query);
+                    if (rs.next())
+                        display(rs); // display
+                }
             System.out.println("\n"); // new line for cleanliness
-        } else if (search == 3) {
+        }
+        else if (search == 3) {
             int i = 1;
             System.out.println("\nTop 5 releases of the month:");
             while (rs.next()) {

@@ -114,10 +114,7 @@ public class searchGames {
         System.out.println("\nPublisher: " + publisher); // print publisher
         System.out.println("Playtime: " + playtime + " mins"); // print playtime
         System.out.println("ESRB Rating: " + esrb); // print esrb rating
-        if(rating == 0.0) // print rating
-            System.out.println("Game has not yet been rated");
-        else
-            System.out.println("Star rating: " + String.format("%.2f", rating)); // round and print
+        System.out.println("Star rating: " + String.format("%.2f", rating)); // round and print
         dst.close(); // close
     }
     private static ArrayList<String> developers(Statement st, int vg_id) throws SQLException {

@@ -3,6 +3,9 @@ package src;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import static src.PostgresSSH.*;
@@ -49,22 +52,26 @@ public class userProfile {
         // top 10 games owned by highest rating
         query = "SELECT * FROM video_game WHERE vg_id IN(SELECT vg_id FROM game_play WHERE username= '" + username + "')";
         rs = st.executeQuery(query);
-        TreeMap<Double, Integer> rate = new TreeMap<>(); // trees sort by default
-        while(rs.next()){
+        TreeMap<Double, List<Integer>> rate = new TreeMap<>();
+        while(rs.next()) {
             int vg_id = getVG_ID(rs.getString("title"));
             double r = rating(st, vg_id);
-            rate.put(r, vg_id); // sort by rating
+            if (!rate.containsKey(r))
+                rate.put(r, new ArrayList<>());
+            rate.get(r).add(vg_id); // add vg_id to the list associated with the rating
         }
-        int k = 1; // counter for listing top
-        System.out.println("\nTop 10 games you own!");
-        for(int i = 0; i < 10 && !rate.isEmpty(); i++){ // get top 10, if there are 10. breaks if empty
-            System.out.println("\n" + k++ + ".");
-            query = "SELECT * FROM video_game WHERE vg_id=" + rate.get(rate.lastKey()); // get the last key, which is greatest
-            rs = st.executeQuery(query);
-            if (rs.next())
-                display(rs); // display the info
-            rate.remove(rate.lastKey()); // remove last key
-        }
+        int k = 1; // Counter for listing top
+        System.out.println("\nTop 10 games!");
+        for (Map.Entry<Double, List<Integer>> entry : rate.descendingMap().entrySet())
+            for (int vg_id : entry.getValue()) {
+                if(k > 10)
+                    break;
+                System.out.println("\n" + k++ + ".");
+                query = "SELECT * FROM video_game WHERE vg_id=" + vg_id;
+                rs = st.executeQuery(query);
+                if (rs.next())
+                    display(rs); // display
+            }
         System.out.println("\n"); // new line for cleanliness
 
     }
