@@ -74,7 +74,8 @@ public class recommendation {
                 System.out.println("\t Released on: " + rs.getString(2));
             }
             System.out.println();
-        } else if (search == 4) {
+        }
+        else if (search == 4) {
             TreeMap<Double, Integer> rate = new TreeMap<>(); // trees sort by default
             while(rs.next()){
                 int vg_id = getVG_ID(rs.getString("title"));
@@ -94,7 +95,8 @@ public class recommendation {
             }
 
             System.out.println();
-        } else {
+        }
+        else {
             System.out.println("Invalid Choice");
         }
     }
